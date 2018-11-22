@@ -11,7 +11,7 @@ Restatic is an open source Linux / Windows GUI for [Restic](https://restic.net).
 ## Main features
 
 - Encrypted, deduplicated and compressed backups.
-- Works with any local or remote Borg repo. 
+- Works with any local or remote Restic repo. 
 - Add SSH keys and initialize repos directly from the GUI.
 - Repo keys are securely stored in KWallet.
 - Mount existing archives via FUSE.
@@ -22,10 +22,10 @@ Restatic is an open source Linux / Windows GUI for [Restic](https://restic.net).
 - Exclude options/patterns.
 
 ## Installation and Download
-Restatic should work on all platforms that support Qt and Borg. 
+Restatic should work on all platforms that support Qt and Restic. 
 
 ### Linux / Windows
-First install Borg and its [dependencies](https://restic.net/). Then install Restatic from Pypi:
+First install Restic and its [dependencies](https://restic.net/). Then install Restatic from Pypi:
 ```
 $ pip install restatic
 ```
