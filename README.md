@@ -40,14 +40,19 @@ Please report any errors you may encounter by [opening an issue](https://github.
 
 ## Development
 
-Install in development/editable mode while in the repo:
+Install the environment in development/editable mode while in the repo:
+
 ```
-$ pip install -e .
+mkdir venv
+virtualenv-3 venv
+source venv/bin/activate
+pip install -r requirements-dev.txt
+pip install -e .
 ```
 
 Then run as Python script:
 ```
-$ restatic
+$ python src/restatic
 ```
 
 Install developer packages we use (pytest, tox, pyinstaller):
@@ -56,10 +61,6 @@ pip install -r requirements-dev.txt
 ```
 
 Qt Creator is used to edit views. Install from [their site](https://www.qt.io/download) or using Homebrew and then open the .ui files in `restatic/UI`:
-```
-$ brew cask install qt-creator
-$ brew install qt
-```
 
 ### Testing (work in progress)
 
