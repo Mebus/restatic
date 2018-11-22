@@ -1,7 +1,7 @@
 from PyQt5 import uic
 from ..utils import get_private_keys, get_asset, choose_folder_dialog
-from restatic.borg.init import BorgInitThread
-from restatic.borg.info import BorgInfoThread
+from restatic.restic.init import ResticInitThread
+from restatic.restic.info import ResticInfoThread
 
 uifile = get_asset('UI/repoadd.ui')
 AddRepoUI, AddRepoBase = uic.loadUiType(uifile, from_imports=True, import_from='restatic.views')
@@ -41,7 +41,7 @@ class AddRepoWindow(AddRepoBase, AddRepoUI):
                 self.sshComboBox.setEnabled(False)
                 self.repoLabel.setText('Repository Path:')
 
-        dialog = choose_folder_dialog(self, "Choose Location of Borg Repository")
+        dialog = choose_folder_dialog(self, "Choose Location of Restic Repository")
         dialog.open(receive)
 
     def use_remote_repo_action(self):
@@ -52,10 +52,10 @@ class AddRepoWindow(AddRepoBase, AddRepoUI):
 
     def run(self):
         if self.validate():
-            params = BorgInitThread.prepare(self.values)
+            params = ResticInitThread.prepare(self.values)
             if params['ok']:
                 self.saveButton.setEnabled(False)
-                thread = BorgInitThread(params['cmd'], params, parent=self)
+                thread = ResticInitThread(params['cmd'], params, parent=self)
                 thread.updated.connect(self._set_status)
                 thread.result.connect(self.run_result)
                 self.thread = thread  # Needs to be connected to self for tests to work.
@@ -86,7 +86,7 @@ class AddRepoWindow(AddRepoBase, AddRepoUI):
             self.sshComboBox.addItem(f'{key["filename"]} ({key["format"]}:{key["fingerprint"]})', key['filename'])
 
     def validate(self):
-        """Pre-flight check for valid input and borg binary."""
+        """Pre-flight check for valid input and restic binary."""
         if len(self.values['repo_url']) < 5:
             self._set_status('Please enter a valid repo URL or path.')
             return False
@@ -109,10 +109,10 @@ class ExistingRepoWindow(AddRepoWindow):
 
     def run(self):
         if self.validate():
-            params = BorgInfoThread.prepare(self.values)
+            params = ResticInfoThread.prepare(self.values)
             if params['ok']:
                 self.saveButton.setEnabled(False)
-                thread = BorgInfoThread(params['cmd'], params, parent=self)
+                thread = ResticInfoThread(params['cmd'], params, parent=self)
                 thread.updated.connect(self._set_status)
                 thread.result.connect(self.run_result)
                 self.thread = thread  # Needs to be connected to self for tests to work.

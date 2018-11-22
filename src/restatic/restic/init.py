@@ -23,9 +23,7 @@ class ResticInitThread(ResticThread):
         else:
             ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ["restic", "init", "--info", "--log-json"]
-        cmd.append(f"--encryption={params['encryption']}")
-        cmd.append(params['repo_url'])
+        cmd = ['restic', 'init', '-r', params['repo_url'], '--json']
 
         ret['encryption'] = params['encryption']
         ret['password'] = params['password']

@@ -2,7 +2,7 @@ import appdirs
 import os
 
 APP_NAME = 'Restatic'
-APP_AUTHOR = 'BorgBase'
+APP_AUTHOR = 'ResticBase'
 dirs = appdirs.AppDirs(APP_NAME, APP_AUTHOR)
 SETTINGS_DIR = dirs.user_data_dir
 LOG_DIR = dirs.user_log_dir

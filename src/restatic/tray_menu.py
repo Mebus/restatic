@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QMenu, QSystemTrayIcon
 from PyQt5.QtGui import QIcon
 
 from .utils import get_asset
-from .borg.borg_thread import BorgThread
+from .restic.restic_thread import ResticThread
 from .models import BackupProfileModel
 
 
@@ -42,7 +42,7 @@ class TrayMenu(QSystemTrayIcon):
 
     def on_user_click(self):
         """Adjust labels to reflect current status."""
-        if BorgThread.is_running():
+        if ResticThread.is_running():
             self.status.setText('Backup in Progress')
             self.profile_menu.setEnabled(False)
             self.cancel_action.setVisible(True)

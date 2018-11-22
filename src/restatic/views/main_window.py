@@ -9,7 +9,7 @@ from .schedule_tab import ScheduleTab
 from .profile_add_edit import AddProfileWindow, EditProfileWindow
 from ..utils import get_asset
 from ..models import BackupProfileModel
-from restatic.borg.borg_thread import BorgThread
+from restatic.restic.restic_thread import ResticThread
 
 
 uifile = get_asset('UI/mainwindow.ui')
@@ -57,7 +57,7 @@ class MainWindow(MainWindowBase, MainWindowUI):
         self.profileDeleteButton.clicked.connect(self.profile_delete_action)
 
         # Connect to existing thread.
-        if BorgThread.is_running():
+        if ResticThread.is_running():
             self.createStartBtn.setEnabled(False)
             self.cancelButton.setEnabled(True)
             self.set_status('Backup in progress.', progress_max=0)

@@ -16,7 +16,9 @@ def main():
         restatic.sentry.init()
 
     # Init database
-    sqlite_db = peewee.SqliteDatabase(os.path.join(SETTINGS_DIR, 'settings.db'))
+    dbpath = os.path.join(SETTINGS_DIR, 'settings.db')
+    print("Using database " + dbpath)
+    sqlite_db = peewee.SqliteDatabase(dbpath)
     init_db(sqlite_db)
 
     app = RestaticApp(sys.argv, single_app=True)

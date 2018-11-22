@@ -52,7 +52,7 @@
        <item>
         <widget class="QLineEdit" name="repoURL">
          <property name="placeholderText">
-          <string>csvis8xq@csvis8xq.repo.borgbase.com:repo</string>
+          <string>csvis8xq@csvis8xq.repo.resticbase.com:repo</string>
          </property>
         </widget>
        </item>

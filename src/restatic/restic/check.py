@@ -22,7 +22,7 @@ class ResticCheckThread(ResticThread):
         else:
             ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ['restic', 'check', '--info', '--log-json']
+        cmd = ['restic', 'check', '--json']
         cmd.append(f'{profile.repo.url}')
 
         ret['ok'] = True

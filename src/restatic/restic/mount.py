@@ -14,8 +14,7 @@ class ResticMountThread(ResticThread):
         else:
             ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ['restic', 'mount', '--log-json']
-        cmd.append(f'{profile.repo.url}')
+        cmd = ['restic', '-r', f'{profile.repo.url}', 'mount',' json']
 
         ret['ok'] = True
         ret['cmd'] = cmd

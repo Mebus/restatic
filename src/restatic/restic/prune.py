@@ -24,18 +24,7 @@ class ResticPruneThread(ResticThread):
         else:
             ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ['restic', 'prune', '--list', '--info', '--log-json']
-
-        pruning_opts = [
-            '--keep-hourly', str(profile.prune_hour),
-            '--keep-daily', str(profile.prune_day),
-            '--keep-weekly', str(profile.prune_week),
-            '--keep-monthly', str(profile.prune_month),
-            '--keep-yearly', str(profile.prune_year),
-            '--prefix', f'{platform.node()}-'
-        ]
-        cmd += pruning_opts
-        cmd.append(f'{profile.repo.url}')
+        cmd = ['restic', '-r', f'{profile.repo.url}', 'prune', '--json']
 
         ret['ok'] = True
         ret['cmd'] = cmd

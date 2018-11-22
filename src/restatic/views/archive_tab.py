@@ -5,11 +5,11 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTableWidgetItem, QTableView, QHeaderView, QComboBox, QToolButton, QButtonGroup, QToolBar
 
-from restatic.borg.prune import BorgPruneThread
-from restatic.borg.list import BorgListThread
-from restatic.borg.check import BorgCheckThread
-from restatic.borg.mount import BorgMountThread
-from restatic.borg.umount import BorgUmountThread
+from restatic.restic.prune import ResticPruneThread
+from restatic.restic.list import ResticListThread
+from restatic.restic.check import ResticCheckThread
+from restatic.restic.mount import ResticMountThread
+from restatic.restic.umount import ResticUmountThread
 from restatic.views.extract_dialog import ExtractDialog
 from restatic.utils import get_asset, pretty_bytes, choose_folder_dialog
 from restatic.models import BackupProfileMixin, ArchiveModel
@@ -90,9 +90,9 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
             self._toggle_all_buttons(enabled=False)
 
     def check_action(self):
-        params = BorgCheckThread.prepare(self.profile())
+        params = ResticCheckThread.prepare(self.profile())
         if params['ok']:
-            thread = BorgCheckThread(params['cmd'], params, parent=self)
+            thread = ResticCheckThread(params['cmd'], params, parent=self)
             thread.updated.connect(self._set_status)
             thread.result.connect(self.check_result)
             self._toggle_all_buttons(False)
@@ -103,9 +103,9 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
             self._toggle_all_buttons(True)
 
     def prune_action(self):
-        params = BorgPruneThread.prepare(self.profile())
+        params = ResticPruneThread.prepare(self.profile())
         if params['ok']:
-            thread = BorgPruneThread(params['cmd'], params, parent=self)
+            thread = ResticPruneThread(params['cmd'], params, parent=self)
             thread.updated.connect(self._set_status)
             thread.result.connect(self.prune_result)
             self._toggle_all_buttons(False)
@@ -119,9 +119,9 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
             self._toggle_all_buttons(True)
 
     def list_action(self):
-        params = BorgListThread.prepare(self.profile())
+        params = ResticListThread.prepare(self.profile())
         if params['ok']:
-            thread = BorgListThread(params['cmd'], params, parent=self)
+            thread = ResticListThread(params['cmd'], params, parent=self)
             thread.updated.connect(self._set_status)
             thread.result.connect(self.list_result)
             self._toggle_all_buttons(False)
@@ -135,12 +135,12 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
 
     def mount_action(self):
         profile = self.profile()
-        params = BorgMountThread.prepare(profile)
+        params = ResticMountThread.prepare(profile)
         if not params['ok']:
             self._set_status(params['message'])
             return
 
-        # Conditions are met (borg binary available, etc)
+        # Conditions are met (restic binary available, etc)
         row_selected = self.archiveTable.selectionModel().selectedRows()
         if row_selected:
             snapshot_cell = self.archiveTable.item(row_selected[0].row(), 3)
@@ -155,7 +155,7 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
                 self.mount_point = mount_point[0]
                 if params['ok']:
                     self._toggle_all_buttons(False)
-                    thread = BorgMountThread(params['cmd'], params, parent=self)
+                    thread = ResticMountThread(params['cmd'], params, parent=self)
                     thread.updated.connect(self.mountErrors.setText)
                     thread.result.connect(self.mount_result)
                     thread.start()
@@ -176,14 +176,14 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
     def umount_action(self):
         if self.mount_point is not None:
             profile = self.profile()
-            params = BorgUmountThread.prepare(profile)
+            params = ResticUmountThread.prepare(profile)
             if not params['ok']:
                 self._set_status(params['message'])
                 return
 
             if self.mount_point in params['active_mount_points']:
                 params['cmd'].append(self.mount_point)
-                thread = BorgUmountThread(params['cmd'], params, parent=self)
+                thread = ResticUmountThread(params['cmd'], params, parent=self)
                 thread.updated.connect(self.mountErrors.setText)
                 thread.result.connect(self.umount_result)
                 thread.start()

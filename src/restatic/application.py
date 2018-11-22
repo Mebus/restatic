@@ -9,7 +9,7 @@ from PyQt5.QtGui import QIcon
 from .tray_menu import TrayMenu
 from .scheduler import RestaticScheduler
 from .models import BackupProfileModel
-from .borg.create import BorgCreateThread
+from .restic.create import ResticCreateThread
 from .views.main_window import MainWindow
 from .utils import get_asset
 from restatic.config import SETTINGS_DIR
@@ -19,7 +19,7 @@ class RestaticApp(QApplication):
     """
     All windows and QWidgets are children of this app.
 
-    When running Borg-commands, the class `BorgThread` will emit events
+    When running Restic-commands, the class `ResticThread` will emit events
     via the `RestaticApp` class to which other windows will subscribe to.
     """
 
@@ -61,9 +61,9 @@ class RestaticApp(QApplication):
             profile_id = self.main_window.current_profile.id
 
         profile = BackupProfileModel.get(id=profile_id)
-        msg = BorgCreateThread.prepare(profile)
+        msg = ResticCreateThread.prepare(profile)
         if msg['ok']:
-            thread = BorgCreateThread(msg['cmd'], msg, parent=self)
+            thread = ResticCreateThread(msg['cmd'], msg, parent=self)
             thread.start()
         else:
             self.backup_log_event.emit(msg['message'])

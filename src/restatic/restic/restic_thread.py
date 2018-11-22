@@ -15,10 +15,10 @@ mutex = QtCore.QMutex()
 logger = logging.getLogger('restatic')
 
 
-class BorgThread(QtCore.QThread, BackupProfileMixin):
+class ResticThread(QtCore.QThread, BackupProfileMixin):
     """
-    Base class to run `borg` command line jobs. If a command needs more pre- or post-processing
-    it should sublass `BorgThread`.
+    Base class to run `restic` command line jobs. If a command needs more pre- or post-processing
+    it should sublass `ResticThread`.
     """
 
     updated = QtCore.pyqtSignal(str)
@@ -26,9 +26,9 @@ class BorgThread(QtCore.QThread, BackupProfileMixin):
 
     def __init__(self, cmd, params, parent=None):
         """
-        Thread to run Borg operations in.
+        Thread to run Restic operations in.
 
-        :param cmd: Borg command line
+        :param cmd: Restic command line
         :param params: Pass options that were used to build cmd and may be needed to
                        process the result.
         :param parent: Parent window. Needs `thread.wait()` if none. (scheduler)
@@ -41,13 +41,13 @@ class BorgThread(QtCore.QThread, BackupProfileMixin):
         cmd[0] = self.prepare_bin()
 
         env = os.environ.copy()
-        env['BORG_HOSTNAME_IS_UNIQUE'] = '1'
+        env['RESTIC_HOSTNAME_IS_UNIQUE'] = '1'
         if params.get('password') and params['password'] is not None:
-            env['BORG_PASSPHRASE'] = params['password']
+            env['RESTIC_PASSWORD'] = params['password']
 
-        env['BORG_RSH'] = 'ssh -oStrictHostKeyChecking=no'
+        env['RESTIC_RSH'] = 'ssh -oStrictHostKeyChecking=no'
         if params.get('ssh_key') and params['ssh_key'] is not None:
-            env['BORG_RSH'] += f' -i ~/.ssh/{params["ssh_key"]}'
+            env['RESTIC_RSH'] += f' -i ~/.ssh/{params["ssh_key"]}'
 
         self.env = env
         self.cmd = cmd
@@ -65,12 +65,12 @@ class BorgThread(QtCore.QThread, BackupProfileMixin):
     @classmethod
     def prepare(cls, profile):
         """
-        Prepare for running Borg. This function in the base class should be called from all
+        Prepare for running Restic. This function in the base class should be called from all
         subclasses and calls that define their own `cmd`.
 
         The `prepare()` step does these things:
         - validate if all conditions to run command are met
-        - build borg command
+        - build restic command
 
         `prepare()` is run 2x. First at the global level and then for each subcommand.
 
@@ -78,13 +78,13 @@ class BorgThread(QtCore.QThread, BackupProfileMixin):
         """
         ret = {'ok': False}
 
-        # Do checks to see if running Borg is possible.
+        # Do checks to see if running Restic is possible.
         if cls.is_running():
             ret['message'] = 'Backup is already in progress.'
             return ret
 
         if cls.prepare_bin() is None:
-            ret['message'] = 'Borg binary was not found.'
+            ret['message'] = 'Restic binary was not found.'
             return ret
 
         if profile.repo is None:
@@ -102,24 +102,24 @@ class BorgThread(QtCore.QThread, BackupProfileMixin):
 
     @classmethod
     def prepare_bin(cls):
-        """Find packaged borg binary. Prefer globally installed."""
+        """Find packaged restic binary. Prefer globally installed."""
 
         # Look in current PATH.
-        if shutil.which('borg'):
-            return 'borg'
+        if shutil.which('restic'):
+            return 'restic'
         else:
             # Look in pyinstaller package
             cwd = getattr(sys, '_MEIPASS', os.getcwd())
-            meipass_borg = os.path.join(cwd, 'bin', 'borg')
-            if os.path.isfile(meipass_borg):
-                return meipass_borg
+            meipass_restic = os.path.join(cwd, 'bin', 'restic')
+            if os.path.isfile(meipass_restic):
+                return meipass_restic
             else:
                 return None
 
     def run(self):
         self.started_event()
         mutex.lock()
-        log_entry = EventLogModel(category='borg-run',
+        log_entry = EventLogModel(category='restic-run',
                                   subcommand=self.cmd[1],
                                   profile=self.params.get('profile_name', None)
                                   )
@@ -181,15 +181,15 @@ class BorgThread(QtCore.QThread, BackupProfileMixin):
         self.result.emit(result)
 
 
-class BorgThreadChain(BorgThread):
+class ResticThreadChain(ResticThread):
     """
-    Metaclass of `BorgThread` that can run multiple other BorgThread actions while providing the same
+    Metaclass of `ResticThread` that can run multiple other ResticThread actions while providing the same
     interface as a single action.
     """
 
     def __init__(self, cmds, input_values, parent=None):
         """
-        Takes a list of tuples with `BorgThread` subclass and optional input parameters. Then all actions are executed
+        Takes a list of tuples with `ResticThread` subclass and optional input parameters. Then all actions are executed
         and a merged result object is returned to the caller. If there is any error, then current result is returned.
 
         :param actions:

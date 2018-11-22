@@ -12,6 +12,9 @@ from .restic_thread import ResticThread
 class ResticCreateThread(ResticThread):
     def process_result(self, result):
         if result['returncode'] in [0, 1]:
+
+            """
+            FIXME: can be fixed, when https://github.com/restic/restic/issues/2096 is implemented
             new_snapshot, created = ArchiveModel.get_or_create(
                 snapshot_id=result['data']['archive']['id'],
                 defaults={
@@ -20,6 +23,17 @@ class ResticCreateThread(ResticThread):
                     'repo': result['params']['repo_id'],
                     'duration': result['data']['archive']['duration'],
                     'size': result['data']['archive']['stats']['deduplicated_size']
+                }
+            )
+            """
+            new_snapshot, created = ArchiveModel.get_or_create(
+                snapshot_id="id42",
+                defaults={
+                    'name': "name" + dt.now().isoformat(),
+                    'time': dt.now(),
+                    'repo': result['params']['repo_id'],
+                    'duration': 5.641542,
+                    'size': 100,
                 }
             )
             new_snapshot.save()
@@ -46,7 +60,7 @@ class ResticCreateThread(ResticThread):
     @classmethod
     def prepare(cls, profile):
         """
-        `restic create` is called from different places and needs some preparation.
+        `restic init` is called from different places and needs some preparation.
         Centralize it here and return the required arguments to the caller.
         """
         ret = super().prepare(profile)
@@ -75,7 +89,7 @@ class ResticCreateThread(ResticThread):
             ret['message'] = 'Repo folder not mounted or moved.'
             return ret
 
-        cmd = ['restic', 'create', '--list', '--info', '--log-json', '--json', '--filter=AM', '-C', profile.compression]
+        cmd = ['restic', 'backup', '-r', profile.repo.url, '--json']
 
         # Add excludes
         # Partly inspired by resticmatic/resticmatic/restic/create.py
@@ -96,9 +110,6 @@ class ResticCreateThread(ResticThread):
             for f in profile.exclude_if_present.split('\n'):
                 if f.strip():
                     cmd.extend(['--exclude-if-present', f.strip()])
-
-        # Add repo url and source dirs.
-        cmd.append(f'{profile.repo.url}::{platform.node()}-{dt.now().isoformat()}')
 
         for f in SourceDirModel.select().where(SourceDirModel.profile == profile.id):
             cmd.append(f.dir)

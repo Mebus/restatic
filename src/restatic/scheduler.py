@@ -3,11 +3,11 @@ from datetime import date, timedelta
 from apscheduler.schedulers.qt import QtScheduler
 from apscheduler.triggers import cron
 
-from restatic.borg.create import BorgCreateThread
+from restatic.restic.create import ResticCreateThread
 from .models import BackupProfileModel, EventLogModel
-from restatic.borg.prune import BorgPruneThread
-from restatic.borg.list import BorgListThread
-from restatic.borg.check import BorgCheckThread
+from restatic.restic.prune import ResticPruneThread
+from restatic.restic.list import ResticListThread
+from restatic.restic.check import ResticCheckThread
 from .notifications import RestaticNotifications
 
 logger = logging.getLogger('restatic')
@@ -75,10 +75,10 @@ class RestaticScheduler(QtScheduler):
         notifier = RestaticNotifications.pick()()
         profile = BackupProfileModel.get(id=profile_id)
         logger.info('Starting background backup for %s', profile.name)
-        msg = BorgCreateThread.prepare(profile)
+        msg = ResticCreateThread.prepare(profile)
         if msg['ok']:
             logger.info('Preparation for backup successful.')
-            thread = BorgCreateThread(msg['cmd'], msg)
+            thread = ResticCreateThread(msg['cmd'], msg)
             thread.start()
             thread.wait()
             if thread.process.returncode in [0, 1]:
@@ -98,16 +98,16 @@ class RestaticScheduler(QtScheduler):
         profile = BackupProfileModel.get(id=profile_id)
         logger.info('Doing post-backup jobs for %s', profile.name)
         if profile.prune_on:
-            msg = BorgPruneThread.prepare(profile)
+            msg = ResticPruneThread.prepare(profile)
             if msg['ok']:
-                prune_thread = BorgPruneThread(msg['cmd'], msg)
+                prune_thread = ResticPruneThread(msg['cmd'], msg)
                 prune_thread.start()
                 prune_thread.wait()
 
                 # Refresh snapshots
-                msg = BorgListThread.prepare(profile)
+                msg = ResticListThread.prepare(profile)
                 if msg['ok']:
-                    list_thread = BorgListThread(msg['cmd'], msg)
+                    list_thread = ResticListThread(msg['cmd'], msg)
                     list_thread.start()
                     list_thread.wait()
 
@@ -118,9 +118,9 @@ class RestaticScheduler(QtScheduler):
             & (EventLogModel.repo_url == profile.repo.url)
         ).count()
         if profile.validation_on and recent_validations == 0:
-            msg = BorgCheckThread.prepare(profile)
+            msg = ResticCheckThread.prepare(profile)
             if msg['ok']:
-                check_thread = BorgCheckThread(msg['cmd'], msg)
+                check_thread = ResticCheckThread(msg['cmd'], msg)
                 check_thread.start()
                 check_thread.wait()
 

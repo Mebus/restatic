@@ -25,8 +25,7 @@ class ResticListThread(ResticThread):
         else:
             ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ['restic', 'list', '--info', '--log-json', '--json']
-        cmd.append(f'{profile.repo.url}')
+        cmd = ['restic', '-r', profile.repo.url, '--json', 'snapshots']
 
         ret['ok'] = True
         ret['cmd'] = cmd
@@ -36,20 +35,27 @@ class ResticListThread(ResticThread):
     def process_result(self, result):
         if result['returncode'] == 0:
             repo, created = RepoModel.get_or_create(url=result['cmd'][-1])
-            remote_snapshots = result['data'].get('archives', [])
 
+            print(result['data'])
+
+            remote_snapshots = result['data']
+
+            """
+            FIXME: implement
             # Delete snapshots that don't exist on the remote side
             for snapshot in ArchiveModel.select().where(ArchiveModel.repo == repo.id):
                 if not list(filter(lambda s: s['id'] == snapshot.snapshot_id, remote_snapshots)):
                     snapshot.delete_instance()
+            """
 
             # Add remote snapshots we don't have locally.
-            for snapshot in result['data'].get('archives', []):
+            for snapshot in result['data']:
+                print(snapshot)
                 new_snapshot, _ = ArchiveModel.get_or_create(
                     snapshot_id=snapshot['id'],
                     defaults={
                         'repo': repo.id,
-                        'name': snapshot['name'],
+                        'name': snapshot['id'],
                         'time': parser.parse(snapshot['time'])
                     }
                 )
