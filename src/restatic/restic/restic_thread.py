@@ -140,6 +140,7 @@ class ResticThread(QtCore.QThread, BackupProfileMixin):
 
         for line in iter(self.process.stderr.readline, ""):
             try:
+                self.process_line(line)  # hook for lines
                 parsed = json.loads(line)
                 if parsed["type"] == "log_message":
                     self.log_event(f'{parsed["levelname"]}: {parsed["message"]}')
@@ -177,6 +178,9 @@ class ResticThread(QtCore.QThread, BackupProfileMixin):
             mutex.unlock()
             os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
             self.terminate()
+
+    def process_line(self, line):
+        pass
 
     def process_result(self, result):
         pass
