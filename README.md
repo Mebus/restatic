@@ -1,4 +1,4 @@
-# Restatic - A Boring Open Source GUI for BorgBackup
+# Restatic - A Boring Open Source GUI for Restic
 [![Build Status](https://travis-ci.org/Mebus/restatic.svg?branch=master)](https://travis-ci.org/Mebus/restatic)
 
 :warning: :warning: ***This is still under heavy developement and currently unusable !!!*** :warning: :warning:
@@ -72,9 +72,9 @@ $ pytest
 - No personal data is ever stored or transmitted by this application.
 - During beta, crash reports are sent to [Sentry](https://sentry.io) to quickly find bugs. You can disable this by setting the env variable `NO_SENTRY=1`. Your repo password will be scrubbed *before* the test report is transmitted.
 
-## Author
-(C) 2018 Manuel Riel for [BorgBase.com](https://www.borgbase.com)
-(C) 2018 Mebus, https://github.com/Mebus/
+## Authors
+ - (C) 2018 Manuel Riel for [BorgBase.com](https://www.borgbase.com)
+ - (C) 2018 Mebus, https://github.com/Mebus/
 
 ## License and Credits
 - Licensed under GPLv3. See LICENSE.txt for details.
