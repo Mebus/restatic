@@ -1,10 +1,10 @@
-from .borg_thread import BorgThread
+from .restic_thread import ResticThread
 from .info import FakeProfile, FakeRepo
 from restatic.models import RepoModel
 from restatic.utils import keyring
 
 
-class BorgInitThread(BorgThread):
+class ResticInitThread(ResticThread):
 
     def started_event(self):
         self.updated.emit('Setting up new repo...')
@@ -23,7 +23,7 @@ class BorgInitThread(BorgThread):
         else:
             ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ["borg", "init", "--info", "--log-json"]
+        cmd = ["restic", "init", "--info", "--log-json"]
         cmd.append(f"--encryption={params['encryption']}")
         cmd.append(params['repo_url'])
 

@@ -6,10 +6,10 @@ from datetime import datetime as dt
 
 from ..utils import get_current_wifi
 from ..models import SourceDirModel, ArchiveModel, WifiSettingModel, RepoModel
-from .borg_thread import BorgThread
+from .restic_thread import ResticThread
 
 
-class BorgCreateThread(BorgThread):
+class ResticCreateThread(ResticThread):
     def process_result(self, result):
         if result['returncode'] in [0, 1]:
             new_snapshot, created = ArchiveModel.get_or_create(
@@ -46,7 +46,7 @@ class BorgCreateThread(BorgThread):
     @classmethod
     def prepare(cls, profile):
         """
-        `borg create` is called from different places and needs some preparation.
+        `restic create` is called from different places and needs some preparation.
         Centralize it here and return the required arguments to the caller.
         """
         ret = super().prepare(profile)
@@ -75,10 +75,10 @@ class BorgCreateThread(BorgThread):
             ret['message'] = 'Repo folder not mounted or moved.'
             return ret
 
-        cmd = ['borg', 'create', '--list', '--info', '--log-json', '--json', '--filter=AM', '-C', profile.compression]
+        cmd = ['restic', 'create', '--list', '--info', '--log-json', '--json', '--filter=AM', '-C', profile.compression]
 
         # Add excludes
-        # Partly inspired by borgmatic/borgmatic/borg/create.py
+        # Partly inspired by resticmatic/resticmatic/restic/create.py
         if profile.exclude_patterns is not None:
             exclude_dirs = []
             for p in profile.exclude_patterns.split('\n'):

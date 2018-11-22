@@ -1,7 +1,7 @@
-from .borg_thread import BorgThread
+from .restic_thread import ResticThread
 
 
-class BorgMountThread(BorgThread):
+class ResticMountThread(ResticThread):
 
     def started_event(self):
         self.updated.emit('Mounting archive into folder...')
@@ -14,7 +14,7 @@ class BorgMountThread(BorgThread):
         else:
             ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ['borg', 'mount', '--log-json']
+        cmd = ['restic', 'mount', '--log-json']
         cmd.append(f'{profile.repo.url}')
 
         ret['ok'] = True

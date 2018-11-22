@@ -1,5 +1,5 @@
 from collections import namedtuple
-from .borg_thread import BorgThread
+from .restic_thread import ResticThread
 from restatic.models import RepoModel
 from restatic.utils import keyring
 
@@ -7,7 +7,7 @@ FakeRepo = namedtuple('Repo', ['url', 'id'])
 FakeProfile = namedtuple('FakeProfile', ['repo', 'name', 'ssh_key'])
 
 
-class BorgInfoThread(BorgThread):
+class ResticInfoThread(ResticThread):
 
     def started_event(self):
         self.updated.emit('Validating existing repo...')
@@ -31,7 +31,7 @@ class BorgInfoThread(BorgThread):
         else:
             ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ["borg", "info", "--info", "--json", "--log-json"]
+        cmd = ["restic", "info", "--info", "--json", "--log-json"]
         cmd.append(profile.repo.url)
 
         if params['password'] == '':

@@ -1,9 +1,9 @@
 from dateutil import parser
-from .borg_thread import BorgThread
+from .restic_thread import ResticThread
 from restatic.models import ArchiveModel, RepoModel
 
 
-class BorgListThread(BorgThread):
+class ResticListThread(ResticThread):
 
     def log_event(self, msg):
         self.app.backup_log_event.emit(msg)
@@ -25,7 +25,7 @@ class BorgListThread(BorgThread):
         else:
             ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ['borg', 'list', '--info', '--log-json', '--json']
+        cmd = ['restic', 'list', '--info', '--log-json', '--json']
         cmd.append(f'{profile.repo.url}')
 
         ret['ok'] = True

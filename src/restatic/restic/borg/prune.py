@@ -1,8 +1,8 @@
 import platform
-from .borg_thread import BorgThread
+from .restic_thread import ResticThread
 
 
-class BorgPruneThread(BorgThread):
+class ResticPruneThread(ResticThread):
 
     def log_event(self, msg):
         self.app.backup_log_event.emit(msg)
@@ -24,7 +24,7 @@ class BorgPruneThread(BorgThread):
         else:
             ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ['borg', 'prune', '--list', '--info', '--log-json']
+        cmd = ['restic', 'prune', '--list', '--info', '--log-json']
 
         pruning_opts = [
             '--keep-hourly', str(profile.prune_hour),

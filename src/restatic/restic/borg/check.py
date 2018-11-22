@@ -1,7 +1,7 @@
-from .borg_thread import BorgThread
+from .restic_thread import ResticThread
 
 
-class BorgCheckThread(BorgThread):
+class ResticCheckThread(ResticThread):
 
     def log_event(self, msg):
         self.app.backup_log_event.emit(msg)
@@ -22,7 +22,7 @@ class BorgCheckThread(BorgThread):
         else:
             ret['ok'] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ['borg', 'check', '--info', '--log-json']
+        cmd = ['restic', 'check', '--info', '--log-json']
         cmd.append(f'{profile.repo.url}')
 
         ret['ok'] = True
