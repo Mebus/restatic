@@ -15,3 +15,6 @@ restatic.egg-info
 .vagrant
 *.log
 *.pyc
+.cache/
+.vscode/
+venv/
