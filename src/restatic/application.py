@@ -34,13 +34,13 @@ class RestaticApp(QApplication):
         # From https://stackoverflow.com/questions/220525/
         #              ensure-a-single-instance-of-an-application-in-linux#221159
         if single_app:
-            pid_file = os.path.join(SETTINGS_DIR, 'restatic.pid')
-            lockfile = open(pid_file, 'w+')
+            pid_file = os.path.join(SETTINGS_DIR, "restatic.pid")
+            lockfile = open(pid_file, "w+")
             try:
                 fcntl.lockf(lockfile, fcntl.LOCK_EX | fcntl.LOCK_NB)
                 self.lockfile = lockfile
             except OSError:
-                print('An instance of Restatic is already running.')
+                print("An instance of Restatic is already running.")
                 sys.exit(1)
 
         super().__init__(args)
@@ -62,25 +62,25 @@ class RestaticApp(QApplication):
 
         profile = BackupProfileModel.get(id=profile_id)
         msg = ResticCreateThread.prepare(profile)
-        if msg['ok']:
-            thread = ResticCreateThread(msg['cmd'], msg, parent=self)
+        if msg["ok"]:
+            thread = ResticCreateThread(msg["cmd"], msg, parent=self)
             thread.start()
         else:
-            self.backup_log_event.emit(msg['message'])
+            self.backup_log_event.emit(msg["message"])
 
     def open_main_window_action(self):
         self.main_window.show()
         self.main_window.raise_()
 
     def backup_started_event_response(self):
-        icon = QIcon(get_asset('icons/hdd-o-active.png'))
+        icon = QIcon(get_asset("icons/hdd-o-active.png"))
         self.tray.setIcon(icon)
 
     def backup_finished_event_response(self):
-        icon = QIcon(get_asset('icons/hdd-o.png'))
+        icon = QIcon(get_asset("icons/hdd-o.png"))
         self.tray.setIcon(icon)
         self.main_window.scheduleTab._draw_next_scheduled_backup()
 
     def backup_cancelled_event_response(self):
-        icon = QIcon(get_asset('icons/hdd-o.png'))
+        icon = QIcon(get_asset("icons/hdd-o.png"))
         self.tray.setIcon(icon)

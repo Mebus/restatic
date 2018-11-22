@@ -9,26 +9,28 @@ from restatic.models import EventLogModel, RepoModel, ArchiveModel
 def test_create_fail(app, qtbot):
     main = app.main_window
     qtbot.mouseClick(main.createStartBtn, QtCore.Qt.LeftButton)
-    assert main.createProgressText.text() == 'Add a backup repository first.'
+    assert main.createProgressText.text() == "Add a backup repository first."
 
 
 def test_repo_add(app, qtbot, mocker, restic_json_output):
     # Add new repo window
     main = app.main_window
     add_repo_window = AddRepoWindow(main.repoTab)
-    qtbot.keyClicks(add_repo_window.repoURL, 'aaa')
+    qtbot.keyClicks(add_repo_window.repoURL, "aaa")
     qtbot.mouseClick(add_repo_window.saveButton, QtCore.Qt.LeftButton)
-    assert add_repo_window.errorText.text().startswith('Please enter a valid')
+    assert add_repo_window.errorText.text().startswith("Please enter a valid")
 
-    qtbot.keyClicks(add_repo_window.repoURL, 'bbb.com:repo')
+    qtbot.keyClicks(add_repo_window.repoURL, "bbb.com:repo")
     qtbot.mouseClick(add_repo_window.saveButton, QtCore.Qt.LeftButton)
-    assert add_repo_window.errorText.text() == 'Please use a longer password.'
+    assert add_repo_window.errorText.text() == "Please use a longer password."
 
-    qtbot.keyClicks(add_repo_window.passwordLineEdit, 'long-password-long')
+    qtbot.keyClicks(add_repo_window.passwordLineEdit, "long-password-long")
 
-    stdout, stderr = restic_json_output('info')
+    stdout, stderr = restic_json_output("info")
     popen_result = mocker.MagicMock(stdout=stdout, stderr=stderr, returncode=0)
-    mocker.patch.object(restatic.restic.restic_thread, 'Popen', return_value=popen_result)
+    mocker.patch.object(
+        restatic.restic.restic_thread, "Popen", return_value=popen_result
+    )
 
     qtbot.mouseClick(add_repo_window.saveButton, QtCore.Qt.LeftButton)
 
@@ -38,17 +40,21 @@ def test_repo_add(app, qtbot, mocker, restic_json_output):
     main.repoTab.process_new_repo(blocker.args[0])
 
     # assert EventLogModel.select().count() == 2
-    assert RepoModel.get(id=1).url == 'aaabbb.com:repo'
+    assert RepoModel.get(id=1).url == "aaabbb.com:repo"
 
 
 def test_create(app_with_repo, restic_json_output, mocker, qtbot):
     main = app_with_repo.main_window
-    stdout, stderr = restic_json_output('create')
+    stdout, stderr = restic_json_output("create")
     popen_result = mocker.MagicMock(stdout=stdout, stderr=stderr, returncode=0)
-    mocker.patch.object(restatic.restic.restic_thread, 'Popen', return_value=popen_result)
+    mocker.patch.object(
+        restatic.restic.restic_thread, "Popen", return_value=popen_result
+    )
 
     qtbot.mouseClick(main.createStartBtn, QtCore.Qt.LeftButton)
-    qtbot.waitUntil(lambda: main.createProgressText.text().startswith('Backup finished.'))
+    qtbot.waitUntil(
+        lambda: main.createProgressText.text().startswith("Backup finished.")
+    )
     qtbot.waitUntil(lambda: main.createStartBtn.isEnabled())
     assert EventLogModel.select().count() == 1
     assert ArchiveModel.select().count() == 1

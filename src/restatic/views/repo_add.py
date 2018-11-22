@@ -3,8 +3,10 @@ from ..utils import get_private_keys, get_asset, choose_folder_dialog
 from restatic.restic.init import ResticInitThread
 from restatic.restic.info import ResticInfoThread
 
-uifile = get_asset('UI/repoadd.ui')
-AddRepoUI, AddRepoBase = uic.loadUiType(uifile, from_imports=True, import_from='restatic.views')
+uifile = get_asset("UI/repoadd.ui")
+AddRepoUI, AddRepoBase = uic.loadUiType(
+    uifile, from_imports=True, import_from="restatic.views"
+)
 
 
 class AddRepoWindow(AddRepoBase, AddRepoUI):
@@ -26,10 +28,10 @@ class AddRepoWindow(AddRepoBase, AddRepoUI):
         out = dict(
             ssh_key=self.sshComboBox.currentData(),
             repo_url=self.repoURL.text(),
-            password=self.passwordLineEdit.text()
+            password=self.passwordLineEdit.text(),
         )
         if self.__class__ == AddRepoWindow:
-            out['encryption'] = self.encryptionComboBox.currentData()
+            out["encryption"] = self.encryptionComboBox.currentData()
         return out
 
     def choose_local_backup_folder(self):
@@ -39,29 +41,29 @@ class AddRepoWindow(AddRepoBase, AddRepoUI):
                 self.repoURL.setText(folder[0])
                 self.repoURL.setEnabled(False)
                 self.sshComboBox.setEnabled(False)
-                self.repoLabel.setText('Repository Path:')
+                self.repoLabel.setText("Repository Path:")
 
         dialog = choose_folder_dialog(self, "Choose Location of Restic Repository")
         dialog.open(receive)
 
     def use_remote_repo_action(self):
-        self.repoURL.setText('')
+        self.repoURL.setText("")
         self.repoURL.setEnabled(True)
         self.sshComboBox.setEnabled(True)
-        self.repoLabel.setText('Repository URL:')
+        self.repoLabel.setText("Repository URL:")
 
     def run(self):
         if self.validate():
             params = ResticInitThread.prepare(self.values)
-            if params['ok']:
+            if params["ok"]:
                 self.saveButton.setEnabled(False)
-                thread = ResticInitThread(params['cmd'], params, parent=self)
+                thread = ResticInitThread(params["cmd"], params, parent=self)
                 thread.updated.connect(self._set_status)
                 thread.result.connect(self.run_result)
                 self.thread = thread  # Needs to be connected to self for tests to work.
                 self.thread.start()
             else:
-                self._set_status(params['message'])
+                self._set_status(params["message"])
 
     def _set_status(self, text):
         self.errorText.setText(text)
@@ -69,32 +71,39 @@ class AddRepoWindow(AddRepoBase, AddRepoUI):
 
     def run_result(self, result):
         self.saveButton.setEnabled(True)
-        if result['returncode'] == 0:
+        if result["returncode"] == 0:
             self.result = result
             self.accept()
 
     def init_encryption(self):
-        self.encryptionComboBox.addItem('Repokey-Blake2 (Recommended, key stored in repository)', 'repokey-blake2')
-        self.encryptionComboBox.addItem('Repokey', 'repokey')
-        self.encryptionComboBox.addItem('Keyfile-Blake2 (Key stored in home directory)', 'keyfile-blake2')
-        self.encryptionComboBox.addItem('Keyfile', 'keyfile')
-        self.encryptionComboBox.addItem('None (not recommended', 'none')
+        self.encryptionComboBox.addItem(
+            "Repokey-Blake2 (Recommended, key stored in repository)", "repokey-blake2"
+        )
+        self.encryptionComboBox.addItem("Repokey", "repokey")
+        self.encryptionComboBox.addItem(
+            "Keyfile-Blake2 (Key stored in home directory)", "keyfile-blake2"
+        )
+        self.encryptionComboBox.addItem("Keyfile", "keyfile")
+        self.encryptionComboBox.addItem("None (not recommended", "none")
 
     def init_ssh_key(self):
         keys = get_private_keys()
         for key in keys:
-            self.sshComboBox.addItem(f'{key["filename"]} ({key["format"]}:{key["fingerprint"]})', key['filename'])
+            self.sshComboBox.addItem(
+                f'{key["filename"]} ({key["format"]}:{key["fingerprint"]})',
+                key["filename"],
+            )
 
     def validate(self):
         """Pre-flight check for valid input and restic binary."""
-        if len(self.values['repo_url']) < 5:
-            self._set_status('Please enter a valid repo URL or path.')
+        if len(self.values["repo_url"]) < 5:
+            self._set_status("Please enter a valid repo URL or path.")
             return False
 
         if self.__class__ == AddRepoWindow:
-            if self.values['encryption'] != 'none':
-                if len(self.values['password']) < 8:
-                    self._set_status('Please use a longer password.')
+            if self.values["encryption"] != "none":
+                if len(self.values["password"]) < 8:
+                    self._set_status("Please use a longer password.")
                     return False
 
         return True
@@ -105,17 +114,17 @@ class ExistingRepoWindow(AddRepoWindow):
         super().__init__()
         self.encryptionComboBox.hide()
         self.encryptionLabel.hide()
-        self.title.setText('Connect to existing Repository')
+        self.title.setText("Connect to existing Repository")
 
     def run(self):
         if self.validate():
             params = ResticInfoThread.prepare(self.values)
-            if params['ok']:
+            if params["ok"]:
                 self.saveButton.setEnabled(False)
-                thread = ResticInfoThread(params['cmd'], params, parent=self)
+                thread = ResticInfoThread(params["cmd"], params, parent=self)
                 thread.updated.connect(self._set_status)
                 thread.result.connect(self.run_result)
                 self.thread = thread  # Needs to be connected to self for tests to work.
                 self.thread.start()
             else:
-                self._set_status(params['message'])
+                self._set_status(params["message"])

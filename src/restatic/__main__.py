@@ -12,11 +12,11 @@ import restatic.log
 
 def main():
     # Send crashes to Sentry.
-    if not os.environ.get('NO_SENTRY', False):
+    if not os.environ.get("NO_SENTRY", False):
         restatic.sentry.init()
 
     # Init database
-    dbpath = os.path.join(SETTINGS_DIR, 'settings.db')
+    dbpath = os.path.join(SETTINGS_DIR, "settings.db")
     print("Using database " + dbpath)
     sqlite_db = peewee.SqliteDatabase(dbpath)
     init_db(sqlite_db)
@@ -26,5 +26,5 @@ def main():
     sys.exit(app.exec_())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

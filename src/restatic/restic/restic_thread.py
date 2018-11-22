@@ -12,7 +12,7 @@ from ..models import EventLogModel, BackupProfileMixin
 from ..utils import keyring
 
 mutex = QtCore.QMutex()
-logger = logging.getLogger('restatic')
+logger = logging.getLogger("restatic")
 
 
 class ResticThread(QtCore.QThread, BackupProfileMixin):
@@ -41,13 +41,13 @@ class ResticThread(QtCore.QThread, BackupProfileMixin):
         cmd[0] = self.prepare_bin()
 
         env = os.environ.copy()
-        env['RESTIC_HOSTNAME_IS_UNIQUE'] = '1'
-        if params.get('password') and params['password'] is not None:
-            env['RESTIC_PASSWORD'] = params['password']
+        env["RESTIC_HOSTNAME_IS_UNIQUE"] = "1"
+        if params.get("password") and params["password"] is not None:
+            env["RESTIC_PASSWORD"] = params["password"]
 
-        env['RESTIC_RSH'] = 'ssh -oStrictHostKeyChecking=no'
-        if params.get('ssh_key') and params['ssh_key'] is not None:
-            env['RESTIC_RSH'] += f' -i ~/.ssh/{params["ssh_key"]}'
+        env["RESTIC_RSH"] = "ssh -oStrictHostKeyChecking=no"
+        if params.get("ssh_key") and params["ssh_key"] is not None:
+            env["RESTIC_RSH"] += f' -i ~/.ssh/{params["ssh_key"]}'
 
         self.env = env
         self.cmd = cmd
@@ -76,27 +76,29 @@ class ResticThread(QtCore.QThread, BackupProfileMixin):
 
         :return: dict(ok: book, message: str)
         """
-        ret = {'ok': False}
+        ret = {"ok": False}
 
         # Do checks to see if running Restic is possible.
         if cls.is_running():
-            ret['message'] = 'Backup is already in progress.'
+            ret["message"] = "Backup is already in progress."
             return ret
 
         if cls.prepare_bin() is None:
-            ret['message'] = 'Restic binary was not found.'
+            ret["message"] = "Restic binary was not found."
             return ret
 
         if profile.repo is None:
-            ret['message'] = 'Add a backup repository first.'
+            ret["message"] = "Add a backup repository first."
             return ret
 
-        ret['ssh_key'] = profile.ssh_key
-        ret['repo_id'] = profile.repo.id
-        ret['repo_url'] = profile.repo.url
-        ret['profile_name'] = profile.name
-        ret['password'] = keyring.get_password("restatic-repo", profile.repo.url)  # None if no password.
-        ret['ok'] = True
+        ret["ssh_key"] = profile.ssh_key
+        ret["repo_id"] = profile.repo.id
+        ret["repo_url"] = profile.repo.url
+        ret["profile_name"] = profile.name
+        ret["password"] = keyring.get_password(
+            "restatic-repo", profile.repo.url
+        )  # None if no password.
+        ret["ok"] = True
 
         return ret
 
@@ -105,12 +107,12 @@ class ResticThread(QtCore.QThread, BackupProfileMixin):
         """Find packaged restic binary. Prefer globally installed."""
 
         # Look in current PATH.
-        if shutil.which('restic'):
-            return 'restic'
+        if shutil.which("restic"):
+            return "restic"
         else:
             # Look in pyinstaller package
-            cwd = getattr(sys, '_MEIPASS', os.getcwd())
-            meipass_restic = os.path.join(cwd, 'bin', 'restic')
+            cwd = getattr(sys, "_MEIPASS", os.getcwd())
+            meipass_restic = os.path.join(cwd, "bin", "restic")
             if os.path.isfile(meipass_restic):
                 return meipass_restic
             else:
@@ -119,23 +121,31 @@ class ResticThread(QtCore.QThread, BackupProfileMixin):
     def run(self):
         self.started_event()
         mutex.lock()
-        log_entry = EventLogModel(category='restic-run',
-                                  subcommand=self.cmd[1],
-                                  profile=self.params.get('profile_name', None)
-                                  )
+        log_entry = EventLogModel(
+            category="restic-run",
+            subcommand=self.cmd[1],
+            profile=self.params.get("profile_name", None),
+        )
         log_entry.save()
 
-        self.process = Popen(self.cmd, stdout=PIPE, stderr=PIPE, bufsize=1,
-                             universal_newlines=True, env=self.env, preexec_fn=os.setsid)
+        self.process = Popen(
+            self.cmd,
+            stdout=PIPE,
+            stderr=PIPE,
+            bufsize=1,
+            universal_newlines=True,
+            env=self.env,
+            preexec_fn=os.setsid,
+        )
 
-        for line in iter(self.process.stderr.readline, ''):
+        for line in iter(self.process.stderr.readline, ""):
             try:
                 parsed = json.loads(line)
-                if parsed['type'] == 'log_message':
+                if parsed["type"] == "log_message":
                     self.log_event(f'{parsed["levelname"]}: {parsed["message"]}')
                     level_int = getattr(logging, parsed["levelname"])
                     logger.log(level_int, parsed["message"])
-                elif parsed['type'] == 'file_status':
+                elif parsed["type"] == "file_status":
                     self.log_event(f'{parsed["path"]} ({parsed["status"]})')
             except json.decoder.JSONDecodeError:
                 msg = line.strip()
@@ -145,17 +155,17 @@ class ResticThread(QtCore.QThread, BackupProfileMixin):
         self.process.wait()
         stdout = self.process.stdout.read()
         result = {
-            'params': self.params,
-            'returncode': self.process.returncode,
-            'cmd': self.cmd
+            "params": self.params,
+            "returncode": self.process.returncode,
+            "cmd": self.cmd,
         }
         try:
-            result['data'] = json.loads(stdout)
+            result["data"] = json.loads(stdout)
         except:  # noqa
-            result['data'] = {}
+            result["data"] = {}
 
         log_entry.returncode = self.process.returncode
-        log_entry.repo_url = self.params.get('repo_url', None)
+        log_entry.repo_url = self.params.get("repo_url", None)
         log_entry.save()
 
         self.process_result(result)
@@ -175,7 +185,7 @@ class ResticThread(QtCore.QThread, BackupProfileMixin):
         self.updated.emit(msg)
 
     def started_event(self):
-        self.updated.emit('Task started')
+        self.updated.emit("Task started")
 
     def finished_event(self, result):
         self.result.emit(result)
@@ -204,15 +214,17 @@ class ResticThreadChain(ResticThread):
                 msg = cmd.prepare(input_value)
             else:
                 msg = cmd.prepare()
-            if msg['ok']:
-                thread = cmd(msg['cmd'], msg, parent)
-                thread.updated.connect(self.updated.emit)  # All log entries are immediately sent to the parent.
+            if msg["ok"]:
+                thread = cmd(msg["cmd"], msg, parent)
+                thread.updated.connect(
+                    self.updated.emit
+                )  # All log entries are immediately sent to the parent.
                 thread.result.connect(self.partial_result)
                 self.threads.append(thread)
         self.threads[0].start()
 
     def partial_result(self, result):
-        if result['returncode'] == 0:
+        if result["returncode"] == 0:
             self.combined_result.update(result)
             self.threads.pop(0)
 

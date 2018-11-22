@@ -2,7 +2,7 @@ from PyQt5 import uic
 from ..utils import get_asset
 from ..models import BackupProfileModel
 
-uifile = get_asset('UI/profileadd.ui')
+uifile = get_asset("UI/profileadd.ui")
 AddProfileUI, AddProfileBase = uic.loadUiType(uifile)
 
 
@@ -19,7 +19,7 @@ class AddProfileWindow(AddProfileBase, AddProfileUI):
             existing_profile = BackupProfileModel.get(id=rename_existing_id)
             self.profileNameField.setText(existing_profile.name)
             self.existing_id = rename_existing_id
-            self.modalTitle.setText('Rename Profile')
+            self.modalTitle.setText("Rename Profile")
 
     def _set_status(self, text):
         self.errorText.setText(text)
@@ -36,13 +36,15 @@ class AddProfileWindow(AddProfileBase, AddProfileUI):
         name = self.profileNameField.text()
         # Name as entered?
         if len(name) == 0:
-            self._set_status('Please enter a profile name.')
+            self._set_status("Please enter a profile name.")
             return False
 
         # Profile with this name already exists?
-        exists = BackupProfileModel.select().where(BackupProfileModel.name == name).count()
+        exists = (
+            BackupProfileModel.select().where(BackupProfileModel.name == name).count()
+        )
         if exists > 0:
-            self._set_status('A profile with this name already exists.')
+            self._set_status("A profile with this name already exists.")
             return False
 
         return True

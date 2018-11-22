@@ -2,7 +2,7 @@ from PyQt5 import uic
 from ..models import SourceDirModel, BackupProfileMixin
 from ..utils import get_asset, choose_folder_dialog
 
-uifile = get_asset('UI/sourcetab.ui')
+uifile = get_asset("UI/sourcetab.ui")
 SourceUI, SourceBase = uic.loadUiType(uifile)
 
 
@@ -37,7 +37,9 @@ class SourceTab(SourceBase, SourceUI, BackupProfileMixin):
         def receive():
             dir = dialog.selectedFiles()
             if dir:
-                new_source, created = SourceDirModel.get_or_create(dir=dir[0], profile=self.profile())
+                new_source, created = SourceDirModel.get_or_create(
+                    dir=dir[0], profile=self.profile()
+                )
                 if created:
                     self.sourceDirectoriesWidget.addItem(dir[0])
                     new_source.save()
@@ -46,7 +48,9 @@ class SourceTab(SourceBase, SourceUI, BackupProfileMixin):
         dialog.open(receive)
 
     def source_remove(self):
-        item = self.sourceDirectoriesWidget.takeItem(self.sourceDirectoriesWidget.currentRow())
+        item = self.sourceDirectoriesWidget.takeItem(
+            self.sourceDirectoriesWidget.currentRow()
+        )
         db_item = SourceDirModel.get(dir=item.text())
         db_item.delete_instance()
         item = None

@@ -3,7 +3,15 @@ from datetime import timedelta
 from PyQt5 import uic, QtCore
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QTableWidgetItem, QTableView, QHeaderView, QComboBox, QToolButton, QButtonGroup, QToolBar
+from PyQt5.QtWidgets import (
+    QTableWidgetItem,
+    QTableView,
+    QHeaderView,
+    QComboBox,
+    QToolButton,
+    QButtonGroup,
+    QToolBar,
+)
 
 from restatic.restic.prune import ResticPruneThread
 from restatic.restic.list import ResticListThread
@@ -14,12 +22,14 @@ from restatic.views.extract_dialog import ExtractDialog
 from restatic.utils import get_asset, pretty_bytes, choose_folder_dialog
 from restatic.models import BackupProfileMixin, ArchiveModel
 
-uifile = get_asset('UI/archivetab.ui')
-ArchiveTabUI, ArchiveTabBase = uic.loadUiType(uifile, from_imports=True, import_from='restatic.views')
+uifile = get_asset("UI/archivetab.ui")
+ArchiveTabUI, ArchiveTabBase = uic.loadUiType(
+    uifile, from_imports=True, import_from="restatic.views"
+)
 
 
 class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
-    prune_intervals = ['hour', 'day', 'week', 'month', 'year']
+    prune_intervals = ["hour", "day", "week", "month", "year"]
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -34,8 +44,8 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
         header.setSectionResizeMode(3, QHeaderView.Stretch)
         header.setStretchLastSection(True)
 
-        if sys.platform != 'darwin':
-            self._set_status('')  # Set platform-specific hints.
+        if sys.platform != "darwin":
+            self._set_status("")  # Set platform-specific hints.
 
         self.archiveTable.setSelectionBehavior(QTableView.SelectRows)
         self.archiveTable.setEditTriggers(QTableView.NoEditTriggers)
@@ -43,8 +53,8 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
 
         # Populate pruning options from database
         for i in self.prune_intervals:
-            getattr(self, f'prune_{i}').setValue(getattr(self.profile(), f'prune_{i}'))
-            getattr(self, f'prune_{i}').valueChanged.connect(self.save_prune_setting)
+            getattr(self, f"prune_{i}").setValue(getattr(self.profile(), f"prune_{i}"))
+            getattr(self, f"prune_{i}").valueChanged.connect(self.save_prune_setting)
 
         self.mountButton.clicked.connect(self.mount_action)
         self.listButton.clicked.connect(self.list_action)
@@ -68,60 +78,67 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
         profile = self.profile()
         if profile.repo is not None:
             self.currentRepoLabel.setText(profile.repo.url)
-            archives = [s for s in profile.repo.archives.select().order_by(ArchiveModel.time.desc())]
+            archives = [
+                s
+                for s in profile.repo.archives.select().order_by(
+                    ArchiveModel.time.desc()
+                )
+            ]
 
             for row, archive in enumerate(archives):
                 self.archiveTable.insertRow(row)
 
-                formatted_time = archive.time.strftime('%Y-%m-%d %H:%M')
+                formatted_time = archive.time.strftime("%Y-%m-%d %H:%M")
                 self.archiveTable.setItem(row, 0, QTableWidgetItem(formatted_time))
-                self.archiveTable.setItem(row, 1, QTableWidgetItem(pretty_bytes(archive.size)))
+                self.archiveTable.setItem(
+                    row, 1, QTableWidgetItem(pretty_bytes(archive.size))
+                )
                 if archive.duration is not None:
                     formatted_duration = str(timedelta(seconds=round(archive.duration)))
                 else:
-                    formatted_duration = ''
+                    formatted_duration = ""
                 self.archiveTable.setItem(row, 2, QTableWidgetItem(formatted_duration))
                 self.archiveTable.setItem(row, 3, QTableWidgetItem(archive.name))
             self.archiveTable.setRowCount(len(archives))
             self._toggle_all_buttons(enabled=True)
         else:
             self.archiveTable.setRowCount(0)
-            self.currentRepoLabel.setText('N/A')
+            self.currentRepoLabel.setText("N/A")
             self._toggle_all_buttons(enabled=False)
 
     def check_action(self):
         params = ResticCheckThread.prepare(self.profile())
-        if params['ok']:
-            thread = ResticCheckThread(params['cmd'], params, parent=self)
+        if params["ok"]:
+            thread = ResticCheckThread(params["cmd"], params, parent=self)
             thread.updated.connect(self._set_status)
             thread.result.connect(self.check_result)
             self._toggle_all_buttons(False)
             thread.start()
 
     def check_result(self, result):
-        if result['returncode'] == 0:
+        if result["returncode"] == 0:
             self._toggle_all_buttons(True)
 
     def prune_action(self):
         params = ResticPruneThread.prepare(self.profile())
-        if params['ok']:
-            thread = ResticPruneThread(params['cmd'], params, parent=self)
+        if params["ok"]:
+            thread = ResticPruneThread(params["cmd"], params, parent=self)
             thread.updated.connect(self._set_status)
             thread.result.connect(self.prune_result)
             self._toggle_all_buttons(False)
             thread.start()
 
     def prune_result(self, result):
-        if result['returncode'] == 0:
-            self._set_status('Pruning finished.')
+        if result["returncode"] == 0:
+            self._set_status("Pruning finished.")
             self.list_action()
         else:
             self._toggle_all_buttons(True)
 
     def list_action(self):
         params = ResticListThread.prepare(self.profile())
-        if params['ok']:
-            thread = ResticListThread(params['cmd'], params, parent=self)
+        if params["ok"]:
+            thread = ResticListThread(params["cmd"], params, parent=self)
             thread.updated.connect(self._set_status)
             thread.result.connect(self.list_result)
             self._toggle_all_buttons(False)
@@ -129,15 +146,15 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
 
     def list_result(self, result):
         self._toggle_all_buttons(True)
-        if result['returncode'] == 0:
-            self._set_status('Refreshed snapshots.')
+        if result["returncode"] == 0:
+            self._set_status("Refreshed snapshots.")
             self.populate_from_profile()
 
     def mount_action(self):
         profile = self.profile()
         params = ResticMountThread.prepare(profile)
-        if not params['ok']:
-            self._set_status(params['message'])
+        if not params["ok"]:
+            self._set_status(params["message"])
             return
 
         # Conditions are met (restic binary available, etc)
@@ -146,16 +163,16 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
             snapshot_cell = self.archiveTable.item(row_selected[0].row(), 3)
             if snapshot_cell:
                 snapshot_name = snapshot_cell.text()
-                params['cmd'][-1] += f'::{snapshot_name}'
+                params["cmd"][-1] += f"::{snapshot_name}"
 
         def receive():
             mount_point = dialog.selectedFiles()
             if mount_point:
-                params['cmd'].append(mount_point[0])
+                params["cmd"].append(mount_point[0])
                 self.mount_point = mount_point[0]
-                if params['ok']:
+                if params["ok"]:
                     self._toggle_all_buttons(False)
-                    thread = ResticMountThread(params['cmd'], params, parent=self)
+                    thread = ResticMountThread(params["cmd"], params, parent=self)
                     thread.updated.connect(self.mountErrors.setText)
                     thread.result.connect(self.mount_result)
                     thread.start()
@@ -165,9 +182,9 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
 
     def mount_result(self, result):
         self._toggle_all_buttons(True)
-        if result['returncode'] == 0:
-            self._set_status('Mounted successfully.')
-            self.mountButton.setText('Unmount')
+        if result["returncode"] == 0:
+            self._set_status("Mounted successfully.")
+            self.mountButton.setText("Unmount")
             self.mountButton.clicked.disconnect()
             self.mountButton.clicked.connect(self.umount_action)
         else:
@@ -177,25 +194,25 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
         if self.mount_point is not None:
             profile = self.profile()
             params = ResticUmountThread.prepare(profile)
-            if not params['ok']:
-                self._set_status(params['message'])
+            if not params["ok"]:
+                self._set_status(params["message"])
                 return
 
-            if self.mount_point in params['active_mount_points']:
-                params['cmd'].append(self.mount_point)
-                thread = ResticUmountThread(params['cmd'], params, parent=self)
+            if self.mount_point in params["active_mount_points"]:
+                params["cmd"].append(self.mount_point)
+                thread = ResticUmountThread(params["cmd"], params, parent=self)
                 thread.updated.connect(self.mountErrors.setText)
                 thread.result.connect(self.umount_result)
                 thread.start()
             else:
-                self._set_status('Mount point not active. Try restarting Restatic.')
+                self._set_status("Mount point not active. Try restarting Restatic.")
                 return
 
     def umount_result(self, result):
         self._toggle_all_buttons(True)
-        if result['returncode'] == 0:
-            self._set_status('Un-mounted successfully.')
-            self.mountButton.setText('Mount')
+        if result["returncode"] == 0:
+            self._set_status("Un-mounted successfully.")
+            self.mountButton.setText("Mount")
             self.mountButton.clicked.disconnect()
             self.mountButton.clicked.connect(self.mount_action)
             self.mount_point = None
@@ -203,7 +220,7 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
     def save_prune_setting(self, new_value):
         profile = self.profile()
         for i in self.prune_intervals:
-            setattr(profile, f'prune_{i}', getattr(self, f'prune_{i}').value())
+            setattr(profile, f"prune_{i}", getattr(self, f"prune_{i}").value())
         profile.save()
 
     def extract_action(self):

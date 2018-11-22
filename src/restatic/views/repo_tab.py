@@ -7,8 +7,10 @@ from .repo_add import AddRepoWindow, ExistingRepoWindow
 from ..utils import pretty_bytes, get_private_keys, get_asset
 from .ssh_add import SSHAddWindow
 
-uifile = get_asset('UI/repotab.ui')
-RepoUI, RepoBase = uic.loadUiType(uifile, from_imports=True, import_from='restatic.views')
+uifile = get_asset("UI/repotab.ui")
+RepoUI, RepoBase = uic.loadUiType(
+    uifile, from_imports=True, import_from="restatic.views"
+)
 
 
 class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
@@ -21,8 +23,8 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
 
         # Populate dropdowns
         self.repoSelector.model().item(0).setEnabled(False)
-        self.repoSelector.addItem('Initialize New Repository', 'init')
-        self.repoSelector.addItem('Add Existing Repository', 'existing')
+        self.repoSelector.addItem("Initialize New Repository", "init")
+        self.repoSelector.addItem("Add Existing Repository", "existing")
         for repo in RepoModel.select():
             self.repoSelector.addItem(repo.url, repo.id)
 
@@ -39,7 +41,9 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
     def populate_from_profile(self):
         profile = self.profile()
         if profile.repo:
-            self.repoSelector.setCurrentIndex(self.repoSelector.findData(profile.repo.id))
+            self.repoSelector.setCurrentIndex(
+                self.repoSelector.findData(profile.repo.id)
+            )
         else:
             self.repoSelector.setCurrentIndex(0)
 
@@ -54,19 +58,21 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
             self.sizeOriginal.setText(pretty_bytes(repo.total_size))
             self.repoEncryption.setText(str(repo.encryption))
         else:
-            self.sizeCompressed.setText('')
-            self.sizeDeduplicated.setText('')
-            self.sizeOriginal.setText('')
-            self.repoEncryption.setText('')
+            self.sizeCompressed.setText("")
+            self.sizeDeduplicated.setText("")
+            self.sizeOriginal.setText("")
+            self.repoEncryption.setText("")
         self.repo_changed.emit()
 
     def init_ssh(self):
         keys = get_private_keys()
         self.sshComboBox.clear()
-        self.sshComboBox.addItem('Automatically choose SSH Key (default)', None)
-        self.sshComboBox.addItem('Create New Key', 'new')
+        self.sshComboBox.addItem("Automatically choose SSH Key (default)", None)
+        self.sshComboBox.addItem("Create New Key", "new")
         for key in keys:
-            self.sshComboBox.addItem(f'{key["filename"]} ({key["format"]})', key['filename'])
+            self.sshComboBox.addItem(
+                f'{key["filename"]} ({key["format"]})', key["filename"]
+            )
 
     def ssh_select_action(self, index):
         if index == 1:
@@ -88,7 +94,7 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
         index = self.sshComboBox.currentIndex()
         if index > 1:
             ssh_key_filename = self.sshComboBox.itemData(index)
-            ssh_key_path = os.path.expanduser(f'~/.ssh/{ssh_key_filename}.pub')
+            ssh_key_path = os.path.expanduser(f"~/.ssh/{ssh_key_filename}.pub")
             if os.path.isfile(ssh_key_path):
                 pub_key = open(ssh_key_path).read().strip()
                 clipboard = QApplication.clipboard()
@@ -97,7 +103,8 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
                 msg.setText("Public Key Copied to Clipboard")
                 msg.setInformativeText(
                     "The selected public SSH key was copied to the clipboard. "
-                    "Use it to set up remote repo permissions.")
+                    "Use it to set up remote repo permissions."
+                )
 
             else:
                 msg.setText("Couldn't find public key.")
@@ -129,8 +136,8 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
             self.init_repo_stats()
 
     def process_new_repo(self, result):
-        if result['returncode'] == 0:
-            new_repo = RepoModel.get(url=result['params']['repo_url'])
+        if result["returncode"] == 0:
+            new_repo = RepoModel.get(url=result["params"]["repo_url"])
             profile = self.profile()
             profile.repo = new_repo.id
             profile.save()
@@ -156,8 +163,8 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
             repo.delete_instance(recursive=True)  # This also deletes snapshots.
             self.repoSelector.setCurrentIndex(0)
             self.repoSelector.removeItem(selected_repo_index)
-            msg.setText('Repository was Unlinked')
-            msg.setInformativeText('You can always connect it again later.')
+            msg.setText("Repository was Unlinked")
+            msg.setInformativeText("You can always connect it again later.")
             msg.exec_()
 
             self.repo_changed.emit()

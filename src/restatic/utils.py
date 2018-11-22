@@ -14,21 +14,23 @@ from .models import WifiSettingModel
 
 class RestaticKeyring(keyring.backend.KeyringBackend):
     """Fallback keyring service."""
+
     @classmethod
     def priority(cls):
         return 5
 
     def set_password(self, service, repo_url, password):
         from .models import RepoPassword
+
         keyring_entry, created = RepoPassword.get_or_create(
-            url=repo_url,
-            defaults={'password': password}
+            url=repo_url, defaults={"password": password}
         )
         keyring_entry.password = password
         keyring_entry.save()
 
     def get_password(self, service, repo_url):
         from .models import RepoPassword
+
         try:
             keyring_entry = RepoPassword.get(url=repo_url)
             return keyring_entry.password
@@ -40,14 +42,17 @@ class RestaticKeyring(keyring.backend.KeyringBackend):
 
 
 """Select keyring/Workaround for pyinstaller+keyring issue."""
-if sys.platform == 'darwin':
+if sys.platform == "darwin":
     from keyring.backends import OS_X
+
     keyring.set_keyring(OS_X.Keyring())
-elif sys.platform == 'win32':
+elif sys.platform == "win32":
     from keyring.backends import Windows
+
     keyring.set_keyring(Windows.WinVaultKeyring())
-elif sys.platform == 'linux':
+elif sys.platform == "linux":
     from keyring.backends import SecretService
+
     try:
         SecretService.Keyring.priority()  # Test if keyring works.
         keyring.set_keyring(SecretService.Keyring())
@@ -60,7 +65,7 @@ else:  # Fall back to saving password to database.
 def choose_folder_dialog(parent, title):
     options = QFileDialog.Options()
     options |= QFileDialog.ShowDirsOnly
-    dialog = QFileDialog(parent, title, os.path.expanduser('~'), options=options)
+    dialog = QFileDialog(parent, title, os.path.expanduser("~"), options=options)
     dialog.setFileMode(QFileDialog.Directory)
     dialog.setParent(parent, QtCore.Qt.Sheet)
     return dialog
@@ -70,7 +75,7 @@ def get_private_keys():
     """Find SSH keys in standard folder."""
     key_formats = [RSAKey, ECDSAKey, Ed25519Key]
 
-    ssh_folder = os.path.expanduser('~/.ssh')
+    ssh_folder = os.path.expanduser("~/.ssh")
 
     available_private_keys = []
     if os.path.isdir(ssh_folder):
@@ -81,10 +86,10 @@ def get_private_keys():
                         os.path.join(ssh_folder, key)
                     )
                     key_details = {
-                        'filename': key,
-                        'format': parsed_key.get_name(),
-                        'bits': parsed_key.get_bits(),
-                        'fingerprint': parsed_key.get_fingerprint().hex()
+                        "filename": key,
+                        "format": parsed_key.get_name(),
+                        "bits": parsed_key.get_bits(),
+                        "fingerprint": parsed_key.get_fingerprint().hex(),
                     }
                     available_private_keys.append(key_details)
                 except (SSHException, UnicodeDecodeError, IsADirectoryError):
@@ -97,41 +102,41 @@ def pretty_bytes(size):
     """from https://stackoverflow.com/questions/12523586/
             python-format-size-application-converting-b-to-kb-mb-gb-tb/37423778"""
     if type(size) != int:
-        return ''
+        return ""
     power = 1000  # GiB is base 2**10, GB is base 10**3.
     n = 0
-    Dic_powerN = {0: '', 1: 'K', 2: 'M', 3: 'G', 4: 'T'}
+    Dic_powerN = {0: "", 1: "K", 2: "M", 3: "G", 4: "T"}
     while size > power:
         size /= power
         n += 1
-    return f'{round(size, 1)} {Dic_powerN[n]}B'
+    return f"{round(size, 1)} {Dic_powerN[n]}B"
 
 
 def get_asset(path):
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         # we are running in a bundle
-        bundle_dir = os.path.join(sys._MEIPASS, 'assets')
+        bundle_dir = os.path.join(sys._MEIPASS, "assets")
     else:
         # we are running in a normal Python environment
-        bundle_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
+        bundle_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
     return os.path.join(bundle_dir, path)
 
 
 def get_sorted_wifis(profile):
     """Get SSIDs from OS and merge with settings in DB."""
 
-    if sys.platform == 'darwin':
-        plist_path = '/Library/Preferences/SystemConfiguration/com.apple.airport.preferences.plist'
-        plist_file = open(plist_path, 'rb')
-        wifis = plistlib.load(plist_file)['KnownNetworks']
+    if sys.platform == "darwin":
+        plist_path = "/Library/Preferences/SystemConfiguration/com.apple.airport.preferences.plist"
+        plist_file = open(plist_path, "rb")
+        wifis = plistlib.load(plist_file)["KnownNetworks"]
         if wifis:
             for wifi in wifis.values():
-                timestamp = wifi.get('LastConnected', None)
-                ssid = wifi['SSIDString']
+                timestamp = wifi.get("LastConnected", None)
+                ssid = wifi["SSIDString"]
                 db_wifi, created = WifiSettingModel.get_or_create(
                     ssid=ssid,
                     profile=profile.id,
-                    defaults={'last_connected': timestamp, 'allowed': True}
+                    defaults={"last_connected": timestamp, "allowed": True},
                 )
 
                 # update last connected time
@@ -140,13 +145,17 @@ def get_sorted_wifis(profile):
                     db_wifi.save()
 
         # remove Wifis that were deleted in the system.
-        deleted_wifis = WifiSettingModel.select() \
-            .where(WifiSettingModel.ssid.not_in([w['SSIDString'] for w in wifis.values()]))
+        deleted_wifis = WifiSettingModel.select().where(
+            WifiSettingModel.ssid.not_in([w["SSIDString"] for w in wifis.values()])
+        )
         for wifi in deleted_wifis:
             wifi.delete_instance()
 
-    return WifiSettingModel.select() \
-        .where(WifiSettingModel.profile == profile.id).order_by(-WifiSettingModel.last_connected)
+    return (
+        WifiSettingModel.select()
+        .where(WifiSettingModel.profile == profile.id)
+        .order_by(-WifiSettingModel.last_connected)
+    )
 
 
 def get_current_wifi():
@@ -156,12 +165,15 @@ def get_current_wifi():
     From https://gist.github.com/keithweaver/00edf356e8194b89ed8d3b7bbead000c
     """
 
-    if sys.platform == 'darwin':
-        cmd = ['/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport', '-I']
+    if sys.platform == "darwin":
+        cmd = [
+            "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport",
+            "-I",
+        ]
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         out, err = process.communicate()
         process.wait()
-        for line in out.decode("utf-8").split('\n'):
-            split_line = line.strip().split(':')
-            if split_line[0] == 'SSID':
+        for line in out.decode("utf-8").split("\n"):
+            split_line = line.strip().split(":")
+            if split_line[0] == "SSID":
                 return split_line[1].strip()

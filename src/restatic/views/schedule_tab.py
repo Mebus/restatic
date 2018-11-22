@@ -1,14 +1,21 @@
 from PyQt5 import uic, QtCore
-from PyQt5.QtWidgets import QListWidgetItem, QApplication, QTableView, QHeaderView, QTableWidgetItem
+from PyQt5.QtWidgets import (
+    QListWidgetItem,
+    QApplication,
+    QTableView,
+    QHeaderView,
+    QTableWidgetItem,
+)
 from ..utils import get_asset, get_sorted_wifis
 from ..models import EventLogModel, WifiSettingModel, BackupProfileMixin
 
-uifile = get_asset('UI/scheduletab.ui')
-ScheduleUI, ScheduleBase = uic.loadUiType(uifile, from_imports=True, import_from='restatic.views')
+uifile = get_asset("UI/scheduletab.ui")
+ScheduleUI, ScheduleBase = uic.loadUiType(
+    uifile, from_imports=True, import_from="restatic.views"
+)
 
 
 class ScheduleTab(ScheduleBase, ScheduleUI, BackupProfileMixin):
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(parent)
@@ -16,9 +23,9 @@ class ScheduleTab(ScheduleBase, ScheduleUI, BackupProfileMixin):
         self.toolBox.setCurrentIndex(0)
 
         self.schedulerRadioMapping = {
-            'off': self.scheduleOffRadio,
-            'interval': self.scheduleIntervalRadio,
-            'fixed': self.scheduleFixedRadio
+            "off": self.scheduleOffRadio,
+            "interval": self.scheduleIntervalRadio,
+            "fixed": self.scheduleFixedRadio,
         }
 
         self.scheduleApplyButton.clicked.connect(self.on_scheduler_apply)
@@ -34,7 +41,8 @@ class ScheduleTab(ScheduleBase, ScheduleUI, BackupProfileMixin):
         self.scheduleIntervalHours.setValue(profile.schedule_interval_hours)
         self.scheduleIntervalMinutes.setValue(profile.schedule_interval_minutes)
         self.scheduleFixedTime.setTime(
-            QtCore.QTime(profile.schedule_fixed_hour, profile.schedule_fixed_minute))
+            QtCore.QTime(profile.schedule_fixed_hour, profile.schedule_fixed_minute)
+        )
 
         # Set checking options
         self.validationCheckBox.setCheckState(profile.validation_on)
@@ -75,21 +83,27 @@ class ScheduleTab(ScheduleBase, ScheduleUI, BackupProfileMixin):
         self.logTableWidget.setSelectionBehavior(QTableView.SelectRows)
         self.logTableWidget.setEditTriggers(QTableView.NoEditTriggers)
 
-        event_logs = [s for s in EventLogModel.select().order_by(EventLogModel.start_time.desc())]
+        event_logs = [
+            s for s in EventLogModel.select().order_by(EventLogModel.start_time.desc())
+        ]
 
         for row, log_line in enumerate(event_logs):
             self.logTableWidget.insertRow(row)
-            formatted_time = log_line.start_time.strftime('%Y-%m-%d %H:%M')
+            formatted_time = log_line.start_time.strftime("%Y-%m-%d %H:%M")
             self.logTableWidget.setItem(row, 0, QTableWidgetItem(formatted_time))
             self.logTableWidget.setItem(row, 1, QTableWidgetItem(log_line.category))
             self.logTableWidget.setItem(row, 2, QTableWidgetItem(log_line.subcommand))
             self.logTableWidget.setItem(row, 3, QTableWidgetItem(log_line.repo_url))
-            self.logTableWidget.setItem(row, 4, QTableWidgetItem(str(log_line.returncode)))
+            self.logTableWidget.setItem(
+                row, 4, QTableWidgetItem(str(log_line.returncode))
+            )
         self.logTableWidget.setRowCount(len(event_logs))
         self._draw_next_scheduled_backup()
 
     def _draw_next_scheduled_backup(self):
-        self.nextBackupDateTimeLabel.setText(self.app.scheduler.next_job_for_profile(self.profile().id))
+        self.nextBackupDateTimeLabel.setText(
+            self.app.scheduler.next_job_for_profile(self.profile().id)
+        )
         self.nextBackupDateTimeLabel.repaint()
 
     def on_scheduler_apply(self):
@@ -107,7 +121,10 @@ class ScheduleTab(ScheduleBase, ScheduleUI, BackupProfileMixin):
                 profile.schedule_interval_hours = self.scheduleIntervalHours.value()
                 profile.schedule_interval_minutes = self.scheduleIntervalMinutes.value()
                 qtime = self.scheduleFixedTime.time()
-                profile.schedule_fixed_hour, profile.schedule_fixed_minute = qtime.hour(), qtime.minute()
+                profile.schedule_fixed_hour, profile.schedule_fixed_minute = (
+                    qtime.hour(),
+                    qtime.minute(),
+                )
                 profile.save()
                 self.app.scheduler.reload()
                 self._draw_next_scheduled_backup()

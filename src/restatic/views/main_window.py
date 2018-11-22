@@ -12,8 +12,10 @@ from ..models import BackupProfileModel
 from restatic.restic.restic_thread import ResticThread
 
 
-uifile = get_asset('UI/mainwindow.ui')
-MainWindowUI, MainWindowBase = uic.loadUiType(uifile, from_imports=True, import_from='restatic.views')
+uifile = get_asset("UI/mainwindow.ui")
+MainWindowUI, MainWindowBase = uic.loadUiType(
+    uifile, from_imports=True, import_from="restatic.views"
+)
 
 
 class MainWindow(MainWindowBase, MainWindowUI):
@@ -22,8 +24,10 @@ class MainWindow(MainWindowBase, MainWindowUI):
         self.setupUi(self)
         self.setWindowTitle(APP_NAME)
         self.app = parent
-        self.current_profile = BackupProfileModel.select().order_by('id').first()
-        self.setWindowFlags(QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
+        self.current_profile = BackupProfileModel.select().order_by("id").first()
+        self.setWindowFlags(
+            QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMinimizeButtonHint
+        )
 
         # Load tab models
         self.repoTab = RepoTab(self.repoTabSlot)
@@ -34,7 +38,9 @@ class MainWindow(MainWindowBase, MainWindowUI):
 
         self.repoTab.repo_changed.connect(self.archiveTab.populate_from_profile)
         self.repoTab.repo_added.connect(self.archiveTab.list_action)
-        self.tabWidget.currentChanged.connect(self.scheduleTab._draw_next_scheduled_backup)
+        self.tabWidget.currentChanged.connect(
+            self.scheduleTab._draw_next_scheduled_backup
+        )
 
         self.createStartBtn.clicked.connect(self.app.create_backup_action)
         self.cancelButton.clicked.connect(self.app.backup_cancelled_event.emit)
@@ -48,7 +54,7 @@ class MainWindow(MainWindowBase, MainWindowUI):
         self.app.backup_cancelled_event.connect(self.backup_cancelled_event)
 
         # Init profile list
-        self.profileSelector.addItem('+ Add New Profile', None)
+        self.profileSelector.addItem("+ Add New Profile", None)
         for profile in BackupProfileModel.select():
             self.profileSelector.addItem(profile.name, profile.id)
         self.profileSelector.setCurrentIndex(1)
@@ -60,7 +66,7 @@ class MainWindow(MainWindowBase, MainWindowUI):
         if ResticThread.is_running():
             self.createStartBtn.setEnabled(False)
             self.cancelButton.setEnabled(True)
-            self.set_status('Backup in progress.', progress_max=0)
+            self.set_status("Backup in progress.", progress_max=0)
 
     def on_close_window(self):
         self.close()
@@ -84,23 +90,31 @@ class MainWindow(MainWindowBase, MainWindowUI):
             window.setParent(self, QtCore.Qt.Sheet)
             window.show()
             if window.exec_():
-                self.profileSelector.addItem(window.edited_profile.name, window.edited_profile.id)
+                self.profileSelector.addItem(
+                    window.edited_profile.name, window.edited_profile.id
+                )
                 self.profileSelector.setCurrentIndex(self.profileSelector.count() - 1)
             else:
                 self.profileSelector.setCurrentIndex(1)
 
-        self.current_profile = BackupProfileModel.get(id=self.profileSelector.currentData())
+        self.current_profile = BackupProfileModel.get(
+            id=self.profileSelector.currentData()
+        )
         self.archiveTab.populate_from_profile()
         self.repoTab.populate_from_profile()
         self.sourceTab.populate_from_profile()
         self.scheduleTab.populate_from_profile()
 
     def profile_rename_action(self):
-        window = EditProfileWindow(rename_existing_id=self.profileSelector.currentData())
+        window = EditProfileWindow(
+            rename_existing_id=self.profileSelector.currentData()
+        )
         window.setParent(self, QtCore.Qt.Sheet)
         window.show()
         if window.exec_():
-            self.profileSelector.setItemText(self.profileSelector.currentIndex(), window.edited_profile.name)
+            self.profileSelector.setItemText(
+                self.profileSelector.currentIndex(), window.edited_profile.name
+            )
 
     def profile_delete_action(self):
         if self.profileSelector.count() >= 3:
@@ -110,8 +124,8 @@ class MainWindow(MainWindowBase, MainWindowUI):
             self.profile_select_action(1)
 
     def backup_started_event(self):
-            self.set_status(progress_max=0)
-            self._toggle_buttons(create_enabled=False)
+        self.set_status(progress_max=0)
+        self._toggle_buttons(create_enabled=False)
 
     def backup_finished_event(self):
         self.set_status(progress_max=100)
@@ -122,4 +136,4 @@ class MainWindow(MainWindowBase, MainWindowUI):
     def backup_cancelled_event(self):
         self._toggle_buttons(create_enabled=True)
         self.set_status(progress_max=100)
-        self.set_status('Task cancelled')
+        self.set_status("Task cancelled")

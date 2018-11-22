@@ -8,11 +8,12 @@ class RestaticNotifications:
     notifier = Notifications.pick()()
     notifier.deliver('blah', 'blah blah')
     """
+
     @classmethod
     def pick(cls):
-        if sys.platform == 'darwin':
+        if sys.platform == "darwin":
             return DarwinNotifications
-        elif sys.platform == 'linux':
+        elif sys.platform == "linux":
             return LinuxNotifications
         else:  # Save to sqlite as fallback?
             return LinuxNotifications
@@ -38,5 +39,6 @@ class LinuxNotifications(RestaticNotifications):
     https://wiki.archlinux.org/index.php/Desktop_notifications#Python
     http://manpages.ubuntu.com/manpages/cosmic/man1/notify-send.1.html
     """
+
     def deliver(self, title, text):
         pass

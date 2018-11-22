@@ -8,7 +8,7 @@ from .models import BackupProfileModel
 
 class TrayMenu(QSystemTrayIcon):
     def __init__(self, parent=None):
-        icon = QIcon(get_asset('icons/hdd-o.png'))
+        icon = QIcon(get_asset("icons/hdd-o.png"))
         QSystemTrayIcon.__init__(self, icon, parent)
         self.app = parent
         menu = QMenu()
@@ -16,11 +16,13 @@ class TrayMenu(QSystemTrayIcon):
         self.status = menu.addAction(self.app.scheduler.next_job)
         self.status.setEnabled(False)
 
-        self.profile_menu = menu.addMenu('Backup Now')
+        self.profile_menu = menu.addMenu("Backup Now")
         for profile in BackupProfileModel.select():
             new_item = self.profile_menu.addAction(profile.name)
             new_item.setData(profile.id)
-            new_item.triggered.connect(lambda profile_id=profile.id: self.app.create_backup_action(profile_id))
+            new_item.triggered.connect(
+                lambda profile_id=profile.id: self.app.create_backup_action(profile_id)
+            )
 
         self.cancel_action = menu.addAction("Cancel Backup")
         self.cancel_action.triggered.connect(self.app.backup_cancelled_event.emit)
@@ -43,11 +45,11 @@ class TrayMenu(QSystemTrayIcon):
     def on_user_click(self):
         """Adjust labels to reflect current status."""
         if ResticThread.is_running():
-            self.status.setText('Backup in Progress')
+            self.status.setText("Backup in Progress")
             self.profile_menu.setEnabled(False)
             self.cancel_action.setVisible(True)
         else:
-            self.status.setText(f'Next Task: {self.app.scheduler.next_job}')
+            self.status.setText(f"Next Task: {self.app.scheduler.next_job}")
             self.profile_menu.setEnabled(True)
             self.cancel_action.setVisible(False)
 
@@ -55,4 +57,6 @@ class TrayMenu(QSystemTrayIcon):
         for profile in BackupProfileModel.select():
             new_item = self.profile_menu.addAction(profile.name)
             new_item.setData(profile.id)
-            new_item.triggered.connect(lambda profile_id=profile.id: self.app.create_backup_action(profile_id))
+            new_item.triggered.connect(
+                lambda profile_id=profile.id: self.app.create_backup_action(profile_id)
+            )
