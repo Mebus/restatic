@@ -55,6 +55,6 @@
   "repository": {
     "id": "3c1861de5908546a65409ed6b98024c0a4845d5348496010896798368c2424dd",
     "last_modified": "2018-11-06T12:35:11.000000",
-    "location": "ssh://i0fis593@i0fis593.repo.borgbase.com/./repo"
+    "location": "ssh://i0fis593@i0fis593.repo.resticbase.com/./repo"
   }
 }

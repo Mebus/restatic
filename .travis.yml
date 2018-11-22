@@ -10,6 +10,7 @@ addons:
     - libacl1-dev
     - libacl1
     - build-essential
+    - restic
   homebrew:
     update: false
     packages:
@@ -28,7 +29,7 @@ cache:
     - $HOME/Library/Caches/Homebrew
 
 sudo: required
-dist: trusty
+dist: cosmic
 
 env:
   global:
@@ -64,7 +65,6 @@ install:
 
 - pip install -U setuptools pip
 - pip install .
-- pip install borgbackup
 - pip install -r requirements-dev.txt
 
 before_script:

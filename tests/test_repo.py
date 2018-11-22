@@ -1,6 +1,6 @@
 from PyQt5 import QtCore
 
-import restatic.borg.borg_thread
+import restatic.restic.restic_thread
 import restatic.models
 from restatic.views.repo_add import AddRepoWindow
 from restatic.models import EventLogModel, RepoModel, ArchiveModel
@@ -12,7 +12,7 @@ def test_create_fail(app, qtbot):
     assert main.createProgressText.text() == 'Add a backup repository first.'
 
 
-def test_repo_add(app, qtbot, mocker, borg_json_output):
+def test_repo_add(app, qtbot, mocker, restic_json_output):
     # Add new repo window
     main = app.main_window
     add_repo_window = AddRepoWindow(main.repoTab)
@@ -26,9 +26,9 @@ def test_repo_add(app, qtbot, mocker, borg_json_output):
 
     qtbot.keyClicks(add_repo_window.passwordLineEdit, 'long-password-long')
 
-    stdout, stderr = borg_json_output('info')
+    stdout, stderr = restic_json_output('info')
     popen_result = mocker.MagicMock(stdout=stdout, stderr=stderr, returncode=0)
-    mocker.patch.object(restatic.borg.borg_thread, 'Popen', return_value=popen_result)
+    mocker.patch.object(restatic.restic.restic_thread, 'Popen', return_value=popen_result)
 
     qtbot.mouseClick(add_repo_window.saveButton, QtCore.Qt.LeftButton)
 
@@ -41,11 +41,11 @@ def test_repo_add(app, qtbot, mocker, borg_json_output):
     assert RepoModel.get(id=1).url == 'aaabbb.com:repo'
 
 
-def test_create(app_with_repo, borg_json_output, mocker, qtbot):
+def test_create(app_with_repo, restic_json_output, mocker, qtbot):
     main = app_with_repo.main_window
-    stdout, stderr = borg_json_output('create')
+    stdout, stderr = restic_json_output('create')
     popen_result = mocker.MagicMock(stdout=stdout, stderr=stderr, returncode=0)
-    mocker.patch.object(restatic.borg.borg_thread, 'Popen', return_value=popen_result)
+    mocker.patch.object(restatic.restic.restic_thread, 'Popen', return_value=popen_result)
 
     qtbot.mouseClick(main.createStartBtn, QtCore.Qt.LeftButton)
     qtbot.waitUntil(lambda: main.createProgressText.text().startswith('Backup finished.'))

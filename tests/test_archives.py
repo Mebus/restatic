@@ -1,5 +1,5 @@
 from restatic.models import BackupProfileModel, ArchiveModel
-import restatic.borg
+import restatic.restic
 
 
 def test_prune_intervals(app, qtbot):
@@ -15,16 +15,16 @@ def test_prune_intervals(app, qtbot):
         assert getattr(profile, f'prune_{i}') == 9
 
 
-def test_repo_list(app_with_repo, qtbot, mocker, borg_json_output):
+def test_repo_list(app_with_repo, qtbot, mocker, restic_json_output):
     main = app_with_repo.main_window
     tab = main.archiveTab
     main.tabWidget.setCurrentIndex(3)
     tab.list_action()
     assert not tab.checkButton.isEnabled()
 
-    stdout, stderr = borg_json_output('list')
+    stdout, stderr = restic_json_output('list')
     popen_result = mocker.MagicMock(stdout=stdout, stderr=stderr, returncode=0)
-    mocker.patch.object(restatic.borg.borg_thread, 'Popen', return_value=popen_result)
+    mocker.patch.object(restatic.restic.restic_thread, 'Popen', return_value=popen_result)
 
     qtbot.waitUntil(lambda: main.createProgressText.text() == 'Refreshing snapshots done.')
     assert ArchiveModel.select().count() == 6

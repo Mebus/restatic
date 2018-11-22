@@ -20,7 +20,7 @@ def app(tmpdir, qtbot):
 @pytest.fixture()
 def app_with_repo(app):
     profile = app.main_window.current_profile
-    new_repo = RepoModel(url='i0fi93@i593.repo.borgbase.com:repo')
+    new_repo = RepoModel(url='i0fi93@i593.repo.resticbase.com:repo')
     new_repo.save()
     profile.repo = new_repo
     profile.save()
@@ -31,9 +31,9 @@ def app_with_repo(app):
 
 
 @pytest.fixture
-def borg_json_output():
+def restic_json_output():
     def _read_json(subcommand):
-        stdout = open(f'tests/borg_json_output/{subcommand}_stdout.json').read()
-        stderr = open(f'tests/borg_json_output/{subcommand}_stderr.json').read()
+        stdout = open(f'tests/restic_json_output/{subcommand}_stdout.json').read()
+        stderr = open(f'tests/restic_json_output/{subcommand}_stderr.json').read()
         return io.StringIO(stdout), io.StringIO(stderr)
     return _read_json

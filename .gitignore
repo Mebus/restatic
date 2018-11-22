@@ -14,3 +14,4 @@ restatic.egg-info
 .python-version
 .vagrant
 *.log
+*.pyc
