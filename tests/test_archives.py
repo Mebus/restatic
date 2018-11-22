@@ -27,6 +27,6 @@ def test_repo_list(app_with_repo, qtbot, mocker, restic_json_output):
     mocker.patch.object(restatic.restic.restic_thread, 'Popen', return_value=popen_result)
 
     qtbot.waitUntil(lambda: main.createProgressText.text() == 'Refreshing snapshots done.')
-    assert ArchiveModel.select().count() == 6
+    assert ArchiveModel.select().count() == 10
     assert main.createProgressText.text() == 'Refreshing snapshots done.'
     assert tab.checkButton.isEnabled()
