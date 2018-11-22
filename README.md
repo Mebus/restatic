@@ -1,46 +1,42 @@
-# Vorta - A Boring Open Source GUI for BorgBackup
-[![Build Status](https://travis-ci.org/borgbase/vorta.svg?branch=master)](https://travis-ci.org/borgbase/vorta)
+# Restatic - A Boring Open Source GUI for BorgBackup
+[![Build Status](https://travis-ci.org/Mebus/restatic.svg?branch=master)](https://travis-ci.org/Mebus/restatic)
 
-![](https://files.qmax.us/vorta-screencast-5.gif)
+:warning: :warning: ***This is still under heavy developement and currently unusable !!!*** :warning: :warning:
 
-Vorta is an open source macOS/Linux GUI for [BorgBackup](https://borgbackup.readthedocs.io). It's currently in beta status. 
+Restatic is an open source Linux / Windows GUI for [Restic](https://restic.net). It's currently in very early alpha status. 
 
 ## Main features
 
 - Encrypted, deduplicated and compressed backups.
-- Works with any local or remote Borg repo. Try [BorgBase](https://www.borgbase.com) for advanced features like append-only repositories and monitoring.
+- Works with any local or remote Borg repo. 
 - Add SSH keys and initialize repos directly from the GUI.
-- Repo keys are securely stored in macOS Keychain, SecretService or KWallet.
+- Repo keys are securely stored in KWallet.
 - Mount existing archives via FUSE.
 - Manage multiple backup profiles with different source folders, destinations and settings.
 - Prune and check backups periodically.
-- Flexible scheduling for automatic background backups. Only allow on certain Wifis.
+- Flexible scheduling for automatic background backups.
 - View a list of archives and action logs.
 - Exclude options/patterns.
-- Automatic updates using Sparkle (on macOS)
 
 ## Installation and Download
-Vorta should work on all platforms that support Qt and Borg. Currently Borg doesn't support Windows, but this may change in the future. Setting allowed Wifi networks is currently not supported on Linux, but everything else should work.
+Restatic should work on all platforms that support Qt and Borg. 
 
-### macOS
-Download the pre-built macOS binary from [Releases](https://github.com/borgbase/vorta/releases). Just download, unzip and run. If you want detailed steps, there is also a [tutorial](https://docs.borgbase.com/macos/how-to-backup-your-mac-using-the-vorta-backup-gui/).
-
-### Linux
-First install Borg and its [dependencies](https://borgbackup.readthedocs.io/en/stable/installation.html#dependencies). Then install Vorta from Pypi:
+### Linux / Windows
+First install Borg and its [dependencies](https://restic.net/). Then install Restatic from Pypi:
 ```
-$ pip install vorta
+$ pip install restatic
 ```
 
-After installation run with the `vorta` command.
+After installation run with the `restatic` command.
 ```
-$ vorta
+$ restatic
 ```
 
 ## Debugging and Bugs
-Please report any errors you may encounter by [opening an issue](https://github.com/borgbase/vorta/issues) on Github. Please include steps to reproduce and all logging output. Logs can be found in these folders:
+Please report any errors you may encounter by [opening an issue](https://github.com/Mebus/restatic/issues) on Github. Please include steps to reproduce and all logging output. Logs can be found in these folders:
 
-- Linux: `$HOME/.cache/Vorta/log`
-- macOS: `$HOME/Library/Logs/Vorta`
+- Linux: `$HOME/.cache/Restatic/log`
+- macOS: `$HOME/Library/Logs/Restatic`
 
 ## Development
 
@@ -51,7 +47,7 @@ $ pip install -e .
 
 Then run as Python script:
 ```
-$ vorta
+$ restatic
 ```
 
 Install developer packages we use (pytest, tox, pyinstaller):
@@ -59,26 +55,18 @@ Install developer packages we use (pytest, tox, pyinstaller):
 pip install -r requirements-dev.txt
 ```
 
-Qt Creator is used to edit views. Install from [their site](https://www.qt.io/download) or using Homebrew and then open the .ui files in `vorta/UI`:
+Qt Creator is used to edit views. Install from [their site](https://www.qt.io/download) or using Homebrew and then open the .ui files in `restatic/UI`:
 ```
 $ brew cask install qt-creator
 $ brew install qt
 ```
 
-To build a macOS app package:
-- add `Sparkle.framework` from [here](https://github.com/sparkle-project/Sparkle) and `borg` from [here](https://github.com/borgbackup/borg/releases) in `bin/macosx64`
-- then uncomment or change the Apple signing profile to be used in `Makefile`
-- finally run to `$ make Vorta.app` to build the app into the `dist` folder.
-
 ### Testing (work in progress)
 
-Tests are in the folder `/tests`. Testing happens at the level of UI components. Calls to `borg` are mocked and can be replaced with some example json-output. To run tests:
+Tests are in the folder `/tests`. Testing happens at the level of UI components. Calls to `restic` are mocked and can be replaced with some example json-output. To run tests:
 ```
 $ pytest
 ```
-
-## Why the Name?
-[Vorta](http://memory-alpha.wikia.com/wiki/Vorta) are a race referenced in Star Trek. They serve the Dominion and are replaced by their clones if they die. Just like our backups.
 
 ## Privacy Policy
 - No personal data is ever stored or transmitted by this application.
@@ -86,9 +74,10 @@ $ pytest
 
 ## Author
 (C) 2018 Manuel Riel for [BorgBase.com](https://www.borgbase.com)
+(C) 2018 Mebus, https://github.com/Mebus/
 
 ## License and Credits
 - Licensed under GPLv3. See LICENSE.txt for details.
-- Uses the excellent [BorgBackup](https://www.borgbackup.org)
+- Uses the excellent [Restic](https://restic.net/)
 - Based on [PyQt](https://riverbankcomputing.com/software/pyqt/intro) and [Qt](https://www.qt.io).
 - Icons by [FontAwesome](https://fontawesome.com)
