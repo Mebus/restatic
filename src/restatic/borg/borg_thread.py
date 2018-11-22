@@ -12,7 +12,7 @@ from ..models import EventLogModel, BackupProfileMixin
 from ..utils import keyring
 
 mutex = QtCore.QMutex()
-logger = logging.getLogger('vorta')
+logger = logging.getLogger('restatic')
 
 
 class BorgThread(QtCore.QThread, BackupProfileMixin):
@@ -95,7 +95,7 @@ class BorgThread(QtCore.QThread, BackupProfileMixin):
         ret['repo_id'] = profile.repo.id
         ret['repo_url'] = profile.repo.url
         ret['profile_name'] = profile.name
-        ret['password'] = keyring.get_password("vorta-repo", profile.repo.url)  # None if no password.
+        ret['password'] = keyring.get_password("restatic-repo", profile.repo.url)  # None if no password.
         ret['ok'] = True
 
         return ret

@@ -9,11 +9,11 @@ from .schedule_tab import ScheduleTab
 from .profile_add_edit import AddProfileWindow, EditProfileWindow
 from ..utils import get_asset
 from ..models import BackupProfileModel
-from vorta.borg.borg_thread import BorgThread
+from restatic.borg.borg_thread import BorgThread
 
 
 uifile = get_asset('UI/mainwindow.ui')
-MainWindowUI, MainWindowBase = uic.loadUiType(uifile, from_imports=True, import_from='vorta.views')
+MainWindowUI, MainWindowBase = uic.loadUiType(uifile, from_imports=True, import_from='restatic.views')
 
 
 class MainWindow(MainWindowBase, MainWindowUI):

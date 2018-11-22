@@ -3,17 +3,17 @@ from datetime import date, timedelta
 from apscheduler.schedulers.qt import QtScheduler
 from apscheduler.triggers import cron
 
-from vorta.borg.create import BorgCreateThread
+from restatic.borg.create import BorgCreateThread
 from .models import BackupProfileModel, EventLogModel
-from vorta.borg.prune import BorgPruneThread
-from vorta.borg.list import BorgListThread
-from vorta.borg.check import BorgCheckThread
-from .notifications import VortaNotifications
+from restatic.borg.prune import BorgPruneThread
+from restatic.borg.list import BorgListThread
+from restatic.borg.check import BorgCheckThread
+from .notifications import RestaticNotifications
 
-logger = logging.getLogger('vorta')
+logger = logging.getLogger('restatic')
 
 
-class VortaScheduler(QtScheduler):
+class RestaticScheduler(QtScheduler):
     def __init__(self, parent):
         super().__init__()
         self.app = parent
@@ -32,8 +32,8 @@ class VortaScheduler(QtScheduler):
                                            minute=profile.schedule_fixed_minute)
             if self.get_job(job_id) is not None and trigger is not None:
                 self.reschedule_job(job_id, trigger=trigger)
-                notifier = VortaNotifications.pick()()
-                notifier.deliver('Vorta Scheduler', 'Background scheduler was changed.')
+                notifier = RestaticNotifications.pick()()
+                notifier.deliver('Restatic Scheduler', 'Background scheduler was changed.')
                 logger.debug('Job for profile %s was rescheduled.', profile.name)
             elif trigger is not None:
                 self.add_job(
@@ -72,7 +72,7 @@ class VortaScheduler(QtScheduler):
             return job.next_run_time.strftime('%Y-%m-%d %H:%M')
 
     def create_backup(self, profile_id):
-        notifier = VortaNotifications.pick()()
+        notifier = RestaticNotifications.pick()()
         profile = BackupProfileModel.get(id=profile_id)
         logger.info('Starting background backup for %s', profile.name)
         msg = BorgCreateThread.prepare(profile)
@@ -84,12 +84,12 @@ class VortaScheduler(QtScheduler):
             if thread.process.returncode in [0, 1]:
                 self.post_backup_tasks(profile_id)
             else:
-                notifier.deliver('Vorta Backup', 'Error during backup creation.')
+                notifier.deliver('Restatic Backup', 'Error during backup creation.')
                 logger.error('Error during backup creation.')
         else:
             logger.error('Conditions for backup not met. Aborting.')
             logger.error(msg['message'])
-            notifier.deliver('Vorta Backup', msg['message'])
+            notifier.deliver('Restatic Backup', msg['message'])
 
     def post_backup_tasks(self, profile_id):
         """

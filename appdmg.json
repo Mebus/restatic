@@ -1,8 +1,8 @@
 {
-  "title": "Vorta Backups",
+  "title": "Restatic Backups",
   "contents": [
     { "x": 448, "y": 144, "type": "link", "path": "/Applications" },
-    { "x": 162, "y": 144, "type": "file", "path": "dist/Vorta.app" }
+    { "x": 162, "y": 144, "type": "file", "path": "dist/Restatic.app" }
   ],
   "format": "ULFO",
   "code-sign": {

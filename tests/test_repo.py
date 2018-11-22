@@ -1,9 +1,9 @@
 from PyQt5 import QtCore
 
-import vorta.borg.borg_thread
-import vorta.models
-from vorta.views.repo_add import AddRepoWindow
-from vorta.models import EventLogModel, RepoModel, ArchiveModel
+import restatic.borg.borg_thread
+import restatic.models
+from restatic.views.repo_add import AddRepoWindow
+from restatic.models import EventLogModel, RepoModel, ArchiveModel
 
 
 def test_create_fail(app, qtbot):
@@ -28,7 +28,7 @@ def test_repo_add(app, qtbot, mocker, borg_json_output):
 
     stdout, stderr = borg_json_output('info')
     popen_result = mocker.MagicMock(stdout=stdout, stderr=stderr, returncode=0)
-    mocker.patch.object(vorta.borg.borg_thread, 'Popen', return_value=popen_result)
+    mocker.patch.object(restatic.borg.borg_thread, 'Popen', return_value=popen_result)
 
     qtbot.mouseClick(add_repo_window.saveButton, QtCore.Qt.LeftButton)
 
@@ -45,7 +45,7 @@ def test_create(app_with_repo, borg_json_output, mocker, qtbot):
     main = app_with_repo.main_window
     stdout, stderr = borg_json_output('create')
     popen_result = mocker.MagicMock(stdout=stdout, stderr=stderr, returncode=0)
-    mocker.patch.object(vorta.borg.borg_thread, 'Popen', return_value=popen_result)
+    mocker.patch.object(restatic.borg.borg_thread, 'Popen', return_value=popen_result)
 
     qtbot.mouseClick(main.createStartBtn, QtCore.Qt.LeftButton)
     qtbot.waitUntil(lambda: main.createProgressText.text().startswith('Backup finished.'))

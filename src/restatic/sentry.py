@@ -1,5 +1,5 @@
 import sentry_sdk
-from vorta._version import __version__
+from restatic._version import __version__
 
 
 def scrub_sensitive_data(event, hint):

@@ -12,7 +12,7 @@ import keyring
 from .models import WifiSettingModel
 
 
-class VortaKeyring(keyring.backend.KeyringBackend):
+class RestaticKeyring(keyring.backend.KeyringBackend):
     """Fallback keyring service."""
     @classmethod
     def priority(cls):
@@ -52,9 +52,9 @@ elif sys.platform == 'linux':
         SecretService.Keyring.priority()  # Test if keyring works.
         keyring.set_keyring(SecretService.Keyring())
     except Exception:
-        keyring.set_keyring(VortaKeyring())
+        keyring.set_keyring(RestaticKeyring())
 else:  # Fall back to saving password to database.
-    keyring.set_keyring(VortaKeyring())
+    keyring.set_keyring(RestaticKeyring())
 
 
 def choose_folder_dialog(parent, title):

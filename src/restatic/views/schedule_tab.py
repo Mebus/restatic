@@ -4,7 +4,7 @@ from ..utils import get_asset, get_sorted_wifis
 from ..models import EventLogModel, WifiSettingModel, BackupProfileMixin
 
 uifile = get_asset('UI/scheduletab.ui')
-ScheduleUI, ScheduleBase = uic.loadUiType(uifile, from_imports=True, import_from='vorta.views')
+ScheduleUI, ScheduleBase = uic.loadUiType(uifile, from_imports=True, import_from='restatic.views')
 
 
 class ScheduleTab(ScheduleBase, ScheduleUI, BackupProfileMixin):

@@ -27,7 +27,7 @@ end
 
 Vagrant.configure(2) do |config|
   # use rsync to copy content to the folder
-  config.vm.synced_folder ".", "/vagrant/vorta", :type => "rsync", :rsync__args => ["--verbose", "--archive", "--delete", "-z"], :rsync__chown => false
+  config.vm.synced_folder ".", "/vagrant/restatic", :type => "rsync", :rsync__args => ["--verbose", "--archive", "--delete", "-z"], :rsync__chown => false
   # do not let the VM access . on the host machine via the default shared folder!
   config.vm.synced_folder ".", "/vagrant", disabled: true
 

@@ -1,5 +1,5 @@
-from vorta.models import BackupProfileModel, ArchiveModel
-import vorta.borg
+from restatic.models import BackupProfileModel, ArchiveModel
+import restatic.borg
 
 
 def test_prune_intervals(app, qtbot):
@@ -24,7 +24,7 @@ def test_repo_list(app_with_repo, qtbot, mocker, borg_json_output):
 
     stdout, stderr = borg_json_output('list')
     popen_result = mocker.MagicMock(stdout=stdout, stderr=stderr, returncode=0)
-    mocker.patch.object(vorta.borg.borg_thread, 'Popen', return_value=popen_result)
+    mocker.patch.object(restatic.borg.borg_thread, 'Popen', return_value=popen_result)
 
     qtbot.waitUntil(lambda: main.createProgressText.text() == 'Refreshing snapshots done.')
     assert ArchiveModel.select().count() == 6

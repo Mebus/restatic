@@ -1,10 +1,10 @@
 from PyQt5 import uic
 from ..utils import get_private_keys, get_asset, choose_folder_dialog
-from vorta.borg.init import BorgInitThread
-from vorta.borg.info import BorgInfoThread
+from restatic.borg.init import BorgInitThread
+from restatic.borg.info import BorgInfoThread
 
 uifile = get_asset('UI/repoadd.ui')
-AddRepoUI, AddRepoBase = uic.loadUiType(uifile, from_imports=True, import_from='vorta.views')
+AddRepoUI, AddRepoBase = uic.loadUiType(uifile, from_imports=True, import_from='restatic.views')
 
 
 class AddRepoWindow(AddRepoBase, AddRepoUI):

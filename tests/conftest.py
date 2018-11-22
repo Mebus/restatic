@@ -2,16 +2,16 @@ import io
 import pytest
 import peewee
 
-import vorta
-from vorta.application import VortaApp
-from vorta.models import RepoModel, SourceDirModel
+import restatic
+from restatic.application import VortaApp
+from restatic.models import RepoModel, SourceDirModel
 
 
 @pytest.fixture()
 def app(tmpdir, qtbot):
     tmp_db = tmpdir.join('settings.sqlite')
     mock_db = peewee.SqliteDatabase(str(tmp_db))
-    vorta.models.init_db(mock_db)
+    restatic.models.init_db(mock_db)
     app = VortaApp([])
     qtbot.addWidget(app.main_window)
     return app

@@ -1,6 +1,6 @@
 from dateutil import parser
 from .borg_thread import BorgThread
-from vorta.models import ArchiveModel, RepoModel
+from restatic.models import ArchiveModel, RepoModel
 
 
 class BorgListThread(BorgThread):

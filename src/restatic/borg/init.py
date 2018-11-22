@@ -1,7 +1,7 @@
 from .borg_thread import BorgThread
 from .info import FakeProfile, FakeRepo
-from vorta.models import RepoModel
-from vorta.utils import keyring
+from restatic.models import RepoModel
+from restatic.utils import keyring
 
 
 class BorgInitThread(BorgThread):
@@ -43,5 +43,5 @@ class BorgInitThread(BorgThread):
                 }
             )
             if new_repo.encryption != 'none':
-                keyring.set_password("vorta-repo", new_repo.url, result['params']['password'])
+                keyring.set_password("restatic-repo", new_repo.url, result['params']['password'])
             new_repo.save()

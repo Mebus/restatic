@@ -7,20 +7,20 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
 
 from .tray_menu import TrayMenu
-from .scheduler import VortaScheduler
+from .scheduler import RestaticScheduler
 from .models import BackupProfileModel
 from .borg.create import BorgCreateThread
 from .views.main_window import MainWindow
 from .utils import get_asset
-from vorta.config import SETTINGS_DIR
+from restatic.config import SETTINGS_DIR
 
 
-class VortaApp(QApplication):
+class RestaticApp(QApplication):
     """
     All windows and QWidgets are children of this app.
 
     When running Borg-commands, the class `BorgThread` will emit events
-    via the `VortaApp` class to which other windows will subscribe to.
+    via the `RestaticApp` class to which other windows will subscribe to.
     """
 
     backup_started_event = QtCore.pyqtSignal()
@@ -34,18 +34,18 @@ class VortaApp(QApplication):
         # From https://stackoverflow.com/questions/220525/
         #              ensure-a-single-instance-of-an-application-in-linux#221159
         if single_app:
-            pid_file = os.path.join(SETTINGS_DIR, 'vorta.pid')
+            pid_file = os.path.join(SETTINGS_DIR, 'restatic.pid')
             lockfile = open(pid_file, 'w+')
             try:
                 fcntl.lockf(lockfile, fcntl.LOCK_EX | fcntl.LOCK_NB)
                 self.lockfile = lockfile
             except OSError:
-                print('An instance of Vorta is already running.')
+                print('An instance of Restatic is already running.')
                 sys.exit(1)
 
         super().__init__(args)
         self.setQuitOnLastWindowClosed(False)
-        self.scheduler = VortaScheduler(self)
+        self.scheduler = RestaticScheduler(self)
 
         # Prepare tray and main window
         self.tray = TrayMenu(self)

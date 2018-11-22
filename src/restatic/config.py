@@ -1,7 +1,7 @@
 import appdirs
 import os
 
-APP_NAME = 'Vorta'
+APP_NAME = 'Restatic'
 APP_AUTHOR = 'BorgBase'
 dirs = appdirs.AppDirs(APP_NAME, APP_AUTHOR)
 SETTINGS_DIR = dirs.user_data_dir

@@ -1,7 +1,7 @@
 from collections import namedtuple
 from .borg_thread import BorgThread
-from vorta.models import RepoModel
-from vorta.utils import keyring
+from restatic.models import RepoModel
+from restatic.utils import keyring
 
 FakeRepo = namedtuple('Repo', ['url', 'id'])
 FakeProfile = namedtuple('FakeProfile', ['repo', 'name', 'ssh_key'])
@@ -56,6 +56,6 @@ class BorgInfoThread(BorgThread):
         if 'encryption' in result['data']:
             new_repo.encryption = result['data']['encryption']['mode']
         if new_repo.encryption != 'none':
-            keyring.set_password("vorta-repo", new_repo.url, result['params']['password'])
+            keyring.set_password("restatic-repo", new_repo.url, result['params']['password'])
 
         new_repo.save()

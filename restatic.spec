@@ -2,16 +2,16 @@
 
 block_cipher = None
 
-a = Analysis(['src/vorta/__main__.py'],
-             pathex=['/Users/manu/Workspace/vorta/src'],
+a = Analysis(['src/restatic/__main__.py'],
+             pathex=['/Users/manu/Workspace/restatic/src'],
              binaries=[
                 ('bin/macosx64/borg', 'bin'),
              ],
              datas=[
-                ('src/vorta/assets/UI/*', 'assets/UI'),
-                ('src/vorta/assets/icons/*', 'assets/icons'),
+                ('src/restatic/assets/UI/*', 'assets/UI'),
+                ('src/restatic/assets/icons/*', 'assets/icons'),
              ],
-             hiddenimports=['vorta.views.collection_rc'],
+             hiddenimports=['restatic.views.collection_rc'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -27,7 +27,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='vorta',
+          name='restatic',
           debug=False,
           bootloader_ignore_signals=True,
           strip=False,
@@ -36,8 +36,8 @@ exe = EXE(pyz,
           console=True )
 
 app = BUNDLE(exe,
-             name='Vorta.app',
-             icon='src/vorta/assets/icons/app-icon.icns',
+             name='Restatic.app',
+             icon='src/restatic/assets/icons/app-icon.icns',
              bundle_identifier='com.borgbase.client.macos',
              info_plist={
                      'NSHighResolutionCapable': 'True',
@@ -45,7 +45,7 @@ app = BUNDLE(exe,
                      'CFBundleShortVersionString': '0.4.6',
                      'CFBundleVersion': '0.4.6',
                      'NSAppleEventsUsageDescription': 'Please allow',
-                     'SUFeedURL': 'https://borgbase.github.io/vorta/appcast-pre.xml'
+                     'SUFeedURL': 'https://borgbase.github.io/restatic/appcast-pre.xml'
                      },
              )
 if False:
@@ -54,4 +54,4 @@ if False:
                    a.zipfiles,
                    a.datas,
                    strip=False,
-                   name='vorta-dir')
+                   name='restatic-dir')

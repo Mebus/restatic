@@ -5,17 +5,17 @@ from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTableWidgetItem, QTableView, QHeaderView, QComboBox, QToolButton, QButtonGroup, QToolBar
 
-from vorta.borg.prune import BorgPruneThread
-from vorta.borg.list import BorgListThread
-from vorta.borg.check import BorgCheckThread
-from vorta.borg.mount import BorgMountThread
-from vorta.borg.umount import BorgUmountThread
-from vorta.views.extract_dialog import ExtractDialog
-from vorta.utils import get_asset, pretty_bytes, choose_folder_dialog
-from vorta.models import BackupProfileMixin, ArchiveModel
+from restatic.borg.prune import BorgPruneThread
+from restatic.borg.list import BorgListThread
+from restatic.borg.check import BorgCheckThread
+from restatic.borg.mount import BorgMountThread
+from restatic.borg.umount import BorgUmountThread
+from restatic.views.extract_dialog import ExtractDialog
+from restatic.utils import get_asset, pretty_bytes, choose_folder_dialog
+from restatic.models import BackupProfileMixin, ArchiveModel
 
 uifile = get_asset('UI/archivetab.ui')
-ArchiveTabUI, ArchiveTabBase = uic.loadUiType(uifile, from_imports=True, import_from='vorta.views')
+ArchiveTabUI, ArchiveTabBase = uic.loadUiType(uifile, from_imports=True, import_from='restatic.views')
 
 
 class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
@@ -188,7 +188,7 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
                 thread.result.connect(self.umount_result)
                 thread.start()
             else:
-                self._set_status('Mount point not active. Try restarting Vorta.')
+                self._set_status('Mount point not active. Try restarting Restatic.')
                 return
 
     def umount_result(self, result):

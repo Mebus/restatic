@@ -1,17 +1,17 @@
 
-Vorta.app:
-	#pyrcc5 -o src/vorta/views/collection_rc.py src/vorta/assets/icons/collection.qrc
-	pyinstaller --clean --noconfirm vorta.spec
-	cp -R bin/macosx64/Sparkle.framework dist/Vorta.app/Contents/Frameworks/
-	cd dist; codesign --deep --sign 'Developer ID Application: Manuel Riel (CNMSCAXT48)' Vorta.app
+Restatic.app:
+	#pyrcc5 -o src/restatic/views/collection_rc.py src/restatic/assets/icons/collection.qrc
+	pyinstaller --clean --noconfirm restatic.spec
+	cp -R bin/macosx64/Sparkle.framework dist/Restatic.app/Contents/Frameworks/
+	cd dist; codesign --deep --sign 'Developer ID Application: Manuel Riel (CNMSCAXT48)' Restatic.app
 
-Vorta.dmg: Vorta.app
-	# sleep 2; cd dist; zip -9rq vorta-0.4.6.zip Vorta.app
-	rm -rf dist/vorta-0.4.6.dmg
-	sleep 2; appdmg appdmg.json dist/vorta-0.4.6.dmg
+Restatic.dmg: Restatic.app
+	# sleep 2; cd dist; zip -9rq restatic-0.4.6.zip Restatic.app
+	rm -rf dist/restatic-0.4.6.dmg
+	sleep 2; appdmg appdmg.json dist/restatic-0.4.6.dmg
 
-github-release: Vorta.dmg
-	hub release create --prerelease --attach=dist/vorta-0.4.6.dmg v0.4.6
+github-release: Restatic.dmg
+	hub release create --prerelease --attach=dist/restatic-0.4.6.dmg v0.4.6
 	git checkout gh-pages
 	git commit -m 'rebuild pages' --allow-empty
 	git push origin gh-pages
@@ -19,7 +19,7 @@ github-release: Vorta.dmg
 
 pypi-release:
 	python setup.py sdist
-	twine upload dist/vorta-0.4.6.tar.gz
+	twine upload dist/restatic-0.4.6.tar.gz
 
 bump-version:
 	git log $$(git describe --tags --abbrev=0)..HEAD --pretty=format:"- %s"

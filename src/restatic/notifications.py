@@ -1,7 +1,7 @@
 import sys
 
 
-class VortaNotifications:
+class RestaticNotifications:
     """
     Usage:
 
@@ -18,7 +18,7 @@ class VortaNotifications:
             return LinuxNotifications
 
 
-class DarwinNotifications(VortaNotifications):
+class DarwinNotifications(RestaticNotifications):
     def deliver(self, title, text):
         from Foundation import NSUserNotification
         from Foundation import NSUserNotificationCenter
@@ -31,7 +31,7 @@ class DarwinNotifications(VortaNotifications):
             center.deliverNotification_(notification)
 
 
-class LinuxNotifications(VortaNotifications):
+class LinuxNotifications(RestaticNotifications):
     """
     Could use the Gnome libs or the binary
 
