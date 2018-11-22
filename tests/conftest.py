@@ -3,7 +3,7 @@ import pytest
 import peewee
 
 import restatic
-from restatic.application import VortaApp
+from restatic.application import RestaticApp
 from restatic.models import RepoModel, SourceDirModel
 
 
@@ -12,7 +12,7 @@ def app(tmpdir, qtbot):
     tmp_db = tmpdir.join('settings.sqlite')
     mock_db = peewee.SqliteDatabase(str(tmp_db))
     restatic.models.init_db(mock_db)
-    app = VortaApp([])
+    app = RestaticApp([])
     qtbot.addWidget(app.main_window)
     return app
 
