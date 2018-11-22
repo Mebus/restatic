@@ -13,7 +13,11 @@ class ResticPruneThread(ResticThread):
     def finished_event(self, result):
         self.app.backup_finished_event.emit(result)
         self.result.emit(result)
-        self.app.backup_log_event.emit("Pruning done.")
+
+        if result["returncode"] == 0:
+            self.app.backup_log_event.emit("Pruning done. No error reported.")
+        else:
+            self.app.backup_log_event.emit("Pruning done. There was an error.")
 
     @classmethod
     def prepare(cls, profile):
