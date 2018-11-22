@@ -1,4 +1,4 @@
-language: generic
+language: python
 
 addons:
   apt:
@@ -10,62 +10,39 @@ addons:
     - libacl1-dev
     - libacl1
     - build-essential
-    - restic
-  homebrew:
-    update: false
-    packages:
-    - openssl
-    - readline
-    - xz
-    - pyenv
-    - pyenv-virtualenv
-    casks:
-    - xquartz
-
-cache:
-  directories:
-    - $HOME/.cache/pip
-    - $HOME/.pyenv/versions
-    - $HOME/Library/Caches/Homebrew
+    - golang
+    - git
 
 sudo: required
-dist: cosmic
+dist: xenial
+
+python:
+  - "3.6"
 
 env:
   global:
   - SETUP_XVFB=true
-  - PYTHON=3.6.3
 
 matrix:
   include:
   - os: linux
-    dist: trusty
+    dist: xenial
     env:
     - RUN_PYINSTALLER=true
-  - os: osx
-    env:
-      - RUN_PYINSTALLER=true
 
 install:
 - |
   if [ $TRAVIS_OS_NAME = "linux" ]; then
-    #curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
-    #git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
-    #git clone git://github.com/pyenv/pyenv-update.git $(pyenv root)/plugins/pyenv-update
-    #export PATH="/home/travis/.pyenv/shims:${PATH}"
     export DISPLAY=:99.0
     /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset
     sleep 3
-  elif [ $TRAVIS_OS_NAME = "osx" ]; then
-    brew upgrade pyenv
   fi
-  pyenv install -s $PYTHON
-  eval "$(pyenv init -)"
-  pyenv shell $PYTHON
 
-- pip install -U setuptools pip
-- pip install .
-- pip install -r requirements-dev.txt
+- python3 -m pip install -U setuptools pip
+- python3 -m pip install .
+- python3 -m pip install -r requirements-dev.txt
+
+- git clone https://github.com/restic/restic
 
 before_script:
 - if [ $TRAVIS_OS_NAME = "linux" ]; then (herbstluftwm )& fi
@@ -95,7 +72,8 @@ script:
 
 branches:
   only:
-  - master
+  - gh-pages
+  - /.*/
 
 notifications:
   email: false
