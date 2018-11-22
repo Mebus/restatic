@@ -6,14 +6,10 @@ from restatic.models import init_db
 from restatic.application import RestaticApp
 from restatic.config import SETTINGS_DIR
 from restatic.updater import get_updater
-import restatic.sentry
 import restatic.log
 
 
 def main():
-    # Send crashes to Sentry.
-    if not os.environ.get("NO_SENTRY", False):
-        restatic.sentry.init()
 
     # Init database
     dbpath = os.path.join(SETTINGS_DIR, "settings.db")

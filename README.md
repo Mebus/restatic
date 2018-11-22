@@ -72,10 +72,6 @@ Tests are in the folder `/tests`. Testing happens at the level of UI components.
 $ pytest
 ```
 
-## Privacy Policy
-- No personal data is ever stored or transmitted by this application.
-- During beta, crash reports are sent to [Sentry](https://sentry.io) to quickly find bugs. You can disable this by setting the env variable `NO_SENTRY=1`. Your repo password will be scrubbed *before* the test report is transmitted.
-
 ## Authors
  - (C) 2018 Manuel Riel for [BorgBase.com](https://www.borgbase.com)
  - (C) 2018 Mebus, https://github.com/Mebus/
