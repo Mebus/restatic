@@ -109,6 +109,7 @@ class ArchiveModel(pw.Model):
     time = pw.DateTimeField()
     duration = pw.FloatField(null=True)
     size = pw.IntegerField(null=True)
+    hostname = pw.CharField(null=True)
 
     def formatted_time(self):
         return

@@ -26,25 +26,6 @@ class ResticCreateThread(ResticThread):
                 }
             )
             """
-            new_snapshot, created = ArchiveModel.get_or_create(
-                snapshot_id="id42",
-                defaults={
-                    "name": "name" + dt.now().isoformat(),
-                    "time": dt.now(),
-                    "repo": result["params"]["repo_id"],
-                    "duration": 5.641542,
-                    "size": 100,
-                },
-            )
-            new_snapshot.save()
-            if "cache" in result["data"] and created:
-                stats = result["data"]["cache"]["stats"]
-                repo = RepoModel.get(id=result["params"]["repo_id"])
-                repo.total_size = stats["total_size"]
-                repo.unique_csize = stats["unique_csize"]
-                repo.unique_size = stats["unique_size"]
-                repo.total_unique_chunks = stats["total_unique_chunks"]
-                repo.save()
 
     def log_event(self, msg):
         self.app.backup_log_event.emit(msg)

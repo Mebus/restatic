@@ -19,6 +19,9 @@ class ResticListThread(ResticThread):
     @classmethod
     def prepare(cls, profile):
         ret = super().prepare(profile)
+
+        cls.profile = profile
+
         if not ret["ok"]:
             return ret
         else:
@@ -33,20 +36,18 @@ class ResticListThread(ResticThread):
 
     def process_result(self, result):
         if result["returncode"] == 0:
-            repo, created = RepoModel.get_or_create(url=result["cmd"][-1])
+            repo, created = RepoModel.get_or_create(url=self.profile.repo.id)
 
             remote_snapshots = result["data"]
 
-            """
-            FIXME: implement
             # Delete snapshots that don't exist on the remote side
-            for snapshot in ArchiveModel.select().where(ArchiveModel.repo == repo.id):
-                if not list(filter(lambda s: s['id'] == snapshot.snapshot_id, remote_snapshots)):
+            for snapshot in ArchiveModel.select().where(
+                ArchiveModel.repo == self.profile.repo.id
+            ):
+                if not list(
+                    filter(lambda s: s["id"] == snapshot.snapshot_id, remote_snapshots)
+                ):
                     snapshot.delete_instance()
-            """
-
-            # FIXME:
-            i = 0
 
             if result["data"]:
 
@@ -54,12 +55,12 @@ class ResticListThread(ResticThread):
                 for snapshot in result["data"]:
 
                     new_snapshot, _ = ArchiveModel.get_or_create(
-                        snapshot_id=i,  # FIXME: needs a real id
+                        snapshot_id=snapshot["id"],
                         defaults={
-                            "repo": repo.id,
+                            "repo": self.profile.repo.id,
                             "name": snapshot["id"],
                             "time": parser.parse(snapshot["time"]),
+                            "hostname": snapshot["hostname"],
                         },
                     )
                     new_snapshot.save()
-                    i = i + 1

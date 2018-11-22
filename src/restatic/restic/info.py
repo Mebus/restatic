@@ -17,6 +17,8 @@ class ResticInfoThread(ResticThread):
         Used to validate existing repository when added.
         """
 
+        cls.params = params
+
         # Build fake profile because we don't have it in the DB yet.
         profile = FakeProfile(
             FakeRepo(params["repo_url"], 999), "New Repo", params["ssh_key"]
@@ -28,8 +30,7 @@ class ResticInfoThread(ResticThread):
         else:
             ret["ok"] = False  # Set back to false, so we can do our own checks here.
 
-        cmd = ["restic", "info", "--info", "--json", "--log-json"]
-        cmd.append(profile.repo.url)
+        cmd = ["restic", "-r", profile.repo.url, "--json", "stats"]
 
         if params["password"] == "":
             ret[
@@ -45,7 +46,9 @@ class ResticInfoThread(ResticThread):
         return ret
 
     def process_result(self, result):
-        new_repo, _ = RepoModel.get_or_create(url=result["cmd"][-1])
+        new_repo, _ = RepoModel.get_or_create(url=self.params["repo_url"])
+
+        """
         if "cache" in result["data"]:
             stats = result["data"]["cache"]["stats"]
             new_repo.total_size = stats["total_size"]
@@ -54,9 +57,10 @@ class ResticInfoThread(ResticThread):
             new_repo.total_unique_chunks = stats["total_unique_chunks"]
         if "encryption" in result["data"]:
             new_repo.encryption = result["data"]["encryption"]["mode"]
-        if new_repo.encryption != "none":
-            keyring.set_password(
-                "restatic-repo", new_repo.url, result["params"]["password"]
-            )
+        """
+
+        keyring.set_password(
+            "restatic-repo", new_repo.url, result["params"]["password"]
+        )
 
         new_repo.save()

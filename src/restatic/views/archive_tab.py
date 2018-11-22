@@ -75,7 +75,9 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
         self.mountButton.setEnabled(enabled)
 
     def populate_from_profile(self):
+
         profile = self.profile()
+
         if profile.repo is not None:
             self.currentRepoLabel.setText(profile.repo.url)
             archives = [
@@ -85,22 +87,20 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
                 )
             ]
 
-            for row, archive in enumerate(archives):
-                self.archiveTable.insertRow(row)
+            self.archiveTable.setRowCount(0)  # clear the table
 
-                formatted_time = archive.time.strftime("%Y-%m-%d %H:%M")
-                self.archiveTable.setItem(row, 0, QTableWidgetItem(formatted_time))
-                self.archiveTable.setItem(
-                    row, 1, QTableWidgetItem(pretty_bytes(archive.size))
-                )
-                if archive.duration is not None:
-                    formatted_duration = str(timedelta(seconds=round(archive.duration)))
-                else:
-                    formatted_duration = ""
-                self.archiveTable.setItem(row, 2, QTableWidgetItem(formatted_duration))
-                self.archiveTable.setItem(row, 3, QTableWidgetItem(archive.name))
-            self.archiveTable.setRowCount(len(archives))
+            for row, archive in enumerate(
+                ArchiveModel.select().where(ArchiveModel.repo == profile.repo)
+            ):
+                self.archiveTable.insertRow(row)
+                formatted_time = str(archive.time)
+                # formatted_time = archive.time.strftime("%Y-%m-%d %H:%M") # FIXME
+                self.archiveTable.setItem(row, 0, QTableWidgetItem(archive.name))
+                self.archiveTable.setItem(row, 1, QTableWidgetItem(formatted_time))
+                self.archiveTable.setItem(row, 2, QTableWidgetItem(archive.hostname))
+            # self.archiveTable.setRowCount(len(archives))
             self._toggle_all_buttons(enabled=True)
+
         else:
             self.archiveTable.setRowCount(0)
             self.currentRepoLabel.setText("N/A")
