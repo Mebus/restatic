@@ -29,12 +29,6 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
         self.repoSelector.currentIndexChanged.connect(self.repo_select_action)
         self.repoRemoveToolbutton.clicked.connect(self.repo_unlink_action)
 
-        self.repoCompression.addItem('LZ4 (default)', 'lz4')
-        self.repoCompression.addItem('Zstandard (medium)', 'zstd')
-        self.repoCompression.addItem('LZMA (high)', 'lzma,6')
-        self.repoCompression.addItem('No Compression', 'none')
-        self.repoCompression.currentIndexChanged.connect(self.compression_select_action)
-
         self.init_ssh()
         self.sshComboBox.currentIndexChanged.connect(self.ssh_select_action)
         self.sshKeyToClipboardButton.clicked.connect(self.ssh_copy_to_clipboard_action)
@@ -49,7 +43,6 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
         else:
             self.repoSelector.setCurrentIndex(0)
 
-        self.repoCompression.setCurrentIndex(self.repoCompression.findData(profile.compression))
         self.sshComboBox.setCurrentIndex(self.sshComboBox.findData(profile.ssh_key))
         self.init_repo_stats()
 
