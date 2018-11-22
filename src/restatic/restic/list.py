@@ -48,16 +48,18 @@ class ResticListThread(ResticThread):
             # FIXME:
             i = 0
 
-            # Add remote snapshots we don't have locally.
-            for snapshot in result["data"]:
+            if result["data"]:
 
-                new_snapshot, _ = ArchiveModel.get_or_create(
-                    snapshot_id=i,  # FIXME: needs a real id
-                    defaults={
-                        "repo": repo.id,
-                        "name": snapshot["id"],
-                        "time": parser.parse(snapshot["time"]),
-                    },
-                )
-                new_snapshot.save()
-                i = i + 1
+                # Add remote snapshots we don't have locally.
+                for snapshot in result["data"]:
+
+                    new_snapshot, _ = ArchiveModel.get_or_create(
+                        snapshot_id=i,  # FIXME: needs a real id
+                        defaults={
+                            "repo": repo.id,
+                            "name": snapshot["id"],
+                            "time": parser.parse(snapshot["time"]),
+                        },
+                    )
+                    new_snapshot.save()
+                    i = i + 1
