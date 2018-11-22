@@ -36,8 +36,6 @@ class ResticListThread(ResticThread):
         if result['returncode'] == 0:
             repo, created = RepoModel.get_or_create(url=result['cmd'][-1])
 
-            print(result['data'])
-
             remote_snapshots = result['data']
 
             """
@@ -48,11 +46,14 @@ class ResticListThread(ResticThread):
                     snapshot.delete_instance()
             """
 
+            # FIXME:
+            i = 0
+
             # Add remote snapshots we don't have locally.
             for snapshot in result['data']:
-                print(snapshot)
+
                 new_snapshot, _ = ArchiveModel.get_or_create(
-                    snapshot_id=snapshot['id'],
+                    snapshot_id=i, # FIXME: needs a real id
                     defaults={
                         'repo': repo.id,
                         'name': snapshot['id'],
@@ -60,3 +61,4 @@ class ResticListThread(ResticThread):
                     }
                 )
                 new_snapshot.save()
+                i = i + 1
