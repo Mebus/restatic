@@ -1,7 +1,7 @@
 # Restatic - A Boring Open Source GUI for Restic
 [![Build Status](https://travis-ci.org/Mebus/restatic.svg?branch=master)](https://travis-ci.org/Mebus/restatic)
 
-:warning: :warning: ***This is still under heavy developement and currently unusable !!!*** :warning: :warning:
+:warning: :warning: ***This is still under heavy developement and currently unusable !!! It's a fork of [Vorta](https://github.com/borgbase/vorta).*** :warning: :warning:
 
 Restatic is an open source Linux / Windows GUI for [Restic](https://restic.net). It's currently in very early alpha status. 
 
