@@ -25,12 +25,19 @@ Restatic is an open source Linux / Windows GUI for [Restic](https://restic.net).
 Restatic should work on all platforms that support Qt and Restic. 
 
 ### Linux / Windows
-First install Restic and its [dependencies](https://restic.net/). Then install Restatic from Pypi:
+First install Restic and its [dependencies](https://restic.net/).
+
+Please make shure that the restic binary has been added to your path.
+
+Then install Restatic from Pypi:
+
 ```
-$ pip install restatic
+$ git clone https://github.com/Mebus/restatic
+$ cd restatic
+$ pip install .
 ```
 
-After installation run with the `restatic` command.
+After installation run it with the `restatic` command.
 ```
 $ restatic
 ```
