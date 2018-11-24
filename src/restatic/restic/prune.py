@@ -1,4 +1,3 @@
-import platform
 from .restic_thread import ResticThread
 
 

@@ -3,7 +3,7 @@ from PyQt5 import QtCore
 import restatic.restic.restic_thread
 import restatic.models
 from restatic.views.repo_add import AddRepoWindow
-from restatic.models import EventLogModel, RepoModel, ArchiveModel
+from restatic.models import EventLogModel, RepoModel
 
 
 def test_create_fail(app, qtbot):

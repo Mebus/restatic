@@ -1,11 +1,8 @@
 import os
 import tempfile
-import platform
-from dateutil import parser
-from datetime import datetime as dt
 
 from ..utils import get_current_wifi
-from ..models import SourceDirModel, ArchiveModel, WifiSettingModel, RepoModel
+from ..models import SourceDirModel, WifiSettingModel
 from .restic_thread import ResticThread
 
 

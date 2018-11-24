@@ -1,17 +1,6 @@
 import sys
-from datetime import timedelta
 from PyQt5 import uic, QtCore
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (
-    QTableWidgetItem,
-    QTableView,
-    QHeaderView,
-    QComboBox,
-    QToolButton,
-    QButtonGroup,
-    QToolBar,
-)
+from PyQt5.QtWidgets import QTableWidgetItem, QTableView, QHeaderView
 
 from restatic.restic.prune import ResticPruneThread
 from restatic.restic.list import ResticListThread
@@ -19,7 +8,7 @@ from restatic.restic.check import ResticCheckThread
 from restatic.restic.mount import ResticMountThread
 from restatic.restic.umount import ResticUmountThread
 from restatic.views.extract_dialog import ExtractDialog
-from restatic.utils import get_asset, pretty_bytes, choose_folder_dialog
+from restatic.utils import get_asset, choose_folder_dialog
 from restatic.models import BackupProfileMixin, ArchiveModel
 
 uifile = get_asset("UI/archivetab.ui")
@@ -80,13 +69,6 @@ class ArchiveTab(ArchiveTabBase, ArchiveTabUI, BackupProfileMixin):
 
         if profile.repo is not None:
             self.currentRepoLabel.setText(profile.repo.url)
-            archives = [
-                s
-                for s in profile.repo.archives.select().order_by(
-                    ArchiveModel.time.desc()
-                )
-            ]
-
             self.archiveTable.setRowCount(0)  # clear the table
 
             for row, archive in enumerate(

@@ -1,7 +1,6 @@
 from dateutil import parser
 from .restic_thread import ResticThread
 from restatic.models import ArchiveModel, RepoModel
-import sys
 
 
 class ResticListThread(ResticThread):

@@ -1,7 +1,6 @@
 from collections import namedtuple
 from .restic_thread import ResticThread
 from restatic.models import RepoModel
-from restatic.utils import keyring
 
 FakeRepo = namedtuple("Repo", ["url", "id"])
 FakeProfile = namedtuple("FakeProfile", ["repo", "name", "ssh_key"])
