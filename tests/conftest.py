@@ -20,7 +20,7 @@ def app(tmpdir, qtbot):
 @pytest.fixture()
 def app_with_repo(app):
     profile = app.main_window.current_profile
-    new_repo = RepoModel(url="i0fi93@i593.repo.resticbase.com:repo")
+    new_repo = RepoModel(url="sftp:user@host.de:/srv/restic-repo")
     new_repo.save()
     profile.repo = new_repo
     profile.save()

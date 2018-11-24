@@ -51,6 +51,9 @@
        </property>
        <item>
         <widget class="QLineEdit" name="repoURL">
+         <property name="text">
+          <string>sftp:user@host:/srv/restic-repo</string>
+         </property>
          <property name="placeholderText">
           <string>csvis8xq@csvis8xq.repo.resticbase.com:repo</string>
          </property>
@@ -65,7 +68,7 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="../icons/collection.qrc">
            <normaloff>:/icons/folder-open.svg</normaloff>:/icons/folder-open.svg</iconset>
          </property>
         </widget>
@@ -76,7 +79,7 @@
           <string>...</string>
          </property>
          <property name="icon">
-          <iconset>
+          <iconset resource="../icons/collection.qrc">
            <normaloff>:/icons/globe.svg</normaloff>:/icons/globe.svg</iconset>
          </property>
         </widget>

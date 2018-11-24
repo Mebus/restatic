@@ -23,14 +23,17 @@ def test_repo_list(app_with_repo, qtbot, mocker, restic_json_output):
     assert not tab.checkButton.isEnabled()
 
     stdout, stderr = restic_json_output("list")
+
     popen_result = mocker.MagicMock(stdout=stdout, stderr=stderr, returncode=0)
     mocker.patch.object(
         restatic.restic.restic_thread, "Popen", return_value=popen_result
     )
 
     qtbot.waitUntil(
-        lambda: main.createProgressText.text() == "Refreshing snapshots done."
+        lambda: main.createProgressText.text() == "Refreshing snapshots done.",
+        timeout=10e3,
     )
+
     assert ArchiveModel.select().count() == 10
     assert main.createProgressText.text() == "Refreshing snapshots done."
     assert tab.checkButton.isEnabled()
