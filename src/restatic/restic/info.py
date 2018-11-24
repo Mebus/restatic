@@ -45,22 +45,33 @@ class ResticInfoThread(ResticThread):
 
         return ret
 
+    @classmethod
+    def prepare_existing(cls, profile):
+        ret = super().prepare(profile)
+        cls.profile = profile
+
+        if not ret["ok"]:
+            return ret
+        else:
+            ret["ok"] = False  # Set back to false, so we can do our own checks here.
+
+        cmd = ["restic", "-r", profile.repo.url, "--json", "stats"]
+
+        ret["ok"] = True
+        ret["cmd"] = cmd
+
+        return ret
+
     def process_result(self, result):
         new_repo, _ = RepoModel.get_or_create(url=self.params["repo_url"])
 
-        """
-        if "cache" in result["data"]:
-            stats = result["data"]["cache"]["stats"]
+        if "total_size" in result["data"]:
+            stats = result["data"]
             new_repo.total_size = stats["total_size"]
-            new_repo.unique_csize = stats["unique_csize"]
-            new_repo.unique_size = stats["unique_size"]
-            new_repo.total_unique_chunks = stats["total_unique_chunks"]
-        if "encryption" in result["data"]:
-            new_repo.encryption = result["data"]["encryption"]["mode"]
-        """
-
-        keyring.set_password(
-            "restatic-repo", new_repo.url, result["params"]["password"]
-        )
+            new_repo.total_file_count = stats["total_file_count"]
+            # new_repo.unique_size = stats["unique_size"]
+            # new_repo.total_unique_chunks = stats["total_unique_chunks"]
 
         new_repo.save()
+
+        self.app.backup_log_event.emit("Refresh info finished.")

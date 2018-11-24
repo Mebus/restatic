@@ -39,6 +39,7 @@ class RepoModel(pw.Model):
     unique_size = pw.IntegerField(null=True)
     unique_csize = pw.IntegerField(null=True)
     total_size = pw.IntegerField(null=True)
+    total_file_count = pw.IntegerField(null=True)
     total_unique_chunks = pw.IntegerField(null=True)
 
     def is_remote_repo(self):

@@ -7,6 +7,8 @@ from .repo_add import AddRepoWindow, ExistingRepoWindow
 from ..utils import pretty_bytes, get_private_keys, get_asset
 from .ssh_add import SSHAddWindow
 
+from restatic.restic.info import ResticInfoThread
+
 uifile = get_asset("UI/repotab.ui")
 RepoUI, RepoBase = uic.loadUiType(
     uifile, from_imports=True, import_from="restatic.views"
@@ -34,6 +36,7 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
         self.init_ssh()
         self.sshComboBox.currentIndexChanged.connect(self.ssh_select_action)
         self.sshKeyToClipboardButton.clicked.connect(self.ssh_copy_to_clipboard_action)
+        self.refreshButton.clicked.connect(self.refresh_action)
 
         self.init_repo_stats()
         self.populate_from_profile()
@@ -54,14 +57,12 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
         repo = self.profile().repo
         if repo is not None:
             self.sizeCompressed.setText(pretty_bytes(repo.unique_csize))
-            self.sizeDeduplicated.setText(pretty_bytes(repo.unique_size))
-            self.sizeOriginal.setText(pretty_bytes(repo.total_size))
-            self.repoEncryption.setText(str(repo.encryption))
+            self.sizeTotal.setText(pretty_bytes(repo.total_size))
+            self.sizeTotalFileCount.setText(str(repo.total_file_count))
         else:
             self.sizeCompressed.setText("")
-            self.sizeDeduplicated.setText("")
-            self.sizeOriginal.setText("")
-            self.repoEncryption.setText("")
+            self.sizeTotal.setText("")
+            self.sizeTotalFileCount.setText("")
         self.repo_changed.emit()
 
     def init_ssh(self):
@@ -168,4 +169,14 @@ class RepoTab(RepoBase, RepoUI, BackupProfileMixin):
             msg.exec_()
 
             self.repo_changed.emit()
+            self.init_repo_stats()
+
+    def refresh_action(self):
+        params = ResticInfoThread.prepare_existing(self.profile())
+
+        if params["ok"]:
+            thread = ResticInfoThread(params["cmd"], params, parent=self)
+            # thread.result.connect(self.run_result)
+            self.thread = thread  # Needs to be connected to self for tests to work.
+            self.thread.start()
             self.init_repo_stats()

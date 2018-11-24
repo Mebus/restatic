@@ -207,75 +207,89 @@
      <item row="0" column="1">
       <widget class="QLabel" name="repoEncryption">
        <property name="text">
-        <string/>
+        <string>AES-256</string>
        </property>
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="Line" name="line">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+      <widget class="QLabel" name="total_size_label">
+       <property name="text">
+        <string>Total size:</string>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="Line" name="line_2">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+      <widget class="QLabel" name="sizeTotal">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="label_11">
+      <widget class="QLabel" name="label_13">
        <property name="text">
-        <string>Original Size:</string>
+        <string>Total file cout:</string>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QLabel" name="sizeOriginal">
+      <widget class="QLabel" name="sizeTotalFileCount">
        <property name="text">
         <string/>
        </property>
       </widget>
      </item>
      <item row="4" column="0">
-      <widget class="QLabel" name="label_13">
-       <property name="text">
-        <string>Deduplicated Size:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
       <widget class="QLabel" name="label_12">
        <property name="text">
         <string>Compressed Size:</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="4" column="1">
       <widget class="QLabel" name="sizeCompressed">
        <property name="text">
         <string/>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QLabel" name="sizeDeduplicated">
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="refreshButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
        <property name="text">
-        <string/>
+        <string>Refresh</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../icons/collection.qrc">
+         <normaloff>:/icons/refresh.svg</normaloff>:/icons/refresh.svg</iconset>
        </property>
       </widget>
      </item>
