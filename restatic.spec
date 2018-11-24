@@ -42,8 +42,8 @@ app = BUNDLE(exe,
              info_plist={
                      'NSHighResolutionCapable': 'True',
                      'LSUIElement': '1',
-                     'CFBundleShortVersionString': '0.4.6',
-                     'CFBundleVersion': '0.4.6',
+                     'CFBundleShortVersionString': '0.1.2',
+                     'CFBundleVersion': '0.1.2',
                      'NSAppleEventsUsageDescription': 'Please allow',
                      'SUFeedURL': 'https://borgbase.github.io/restatic/appcast-pre.xml'
                      },

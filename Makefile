@@ -6,12 +6,12 @@ Restatic.app:
 	cd dist; codesign --deep --sign 'Developer ID Application: Manuel Riel (CNMSCAXT48)' Restatic.app
 
 Restatic.dmg: Restatic.app
-	# sleep 2; cd dist; zip -9rq restatic-0.4.6.zip Restatic.app
-	rm -rf dist/restatic-0.4.6.dmg
-	sleep 2; appdmg appdmg.json dist/restatic-0.4.6.dmg
+	# sleep 2; cd dist; zip -9rq restatic-0.1.2.zip Restatic.app
+	rm -rf dist/restatic-0.1.2.dmg
+	sleep 2; appdmg appdmg.json dist/restatic-0.1.2.dmg
 
 github-release: Restatic.dmg
-	hub release create --prerelease --attach=dist/restatic-0.4.6.dmg v0.4.6
+	hub release create --prerelease --attach=dist/restatic-0.1.2.dmg v0.1.2
 	git checkout gh-pages
 	git commit -m 'rebuild pages' --allow-empty
 	git push origin gh-pages
@@ -19,7 +19,7 @@ github-release: Restatic.dmg
 
 pypi-release:
 	python setup.py sdist
-	twine upload dist/restatic-0.4.6.tar.gz
+	twine upload dist/restatic-0.1.2.tar.gz
 
 bump-version:
 	git log $$(git describe --tags --abbrev=0)..HEAD --pretty=format:"- %s"
