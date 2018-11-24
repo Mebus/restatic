@@ -53,7 +53,7 @@ class RepoPassword(pw.Model):
     """Fallback to save repo passwords. Only used if no Keyring available."""
 
     url = pw.CharField(unique=True)
-    password = pw.CharField()
+    password = pw.CharField(null=True)
 
     class Meta:
         database = db
