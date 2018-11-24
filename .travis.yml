@@ -52,6 +52,7 @@ before_script:
 
 script:
 - pytest --forked
+- tox -e flake8
 
 #after_script:
 #- |

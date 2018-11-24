@@ -76,7 +76,8 @@ Qt Creator is used to edit views. Install from [their site](https://www.qt.io/do
 
 Tests are in the folder `/tests`. Testing happens at the level of UI components. Calls to `restic` are mocked and can be replaced with some example json-output. To run tests:
 ```
-$ pytest
+$ pytest --forked
+$ pytest --flake8
 ```
 
 ## Authors
