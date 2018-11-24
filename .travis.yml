@@ -31,23 +31,24 @@ matrix:
     - RUN_PYINSTALLER=true
 
 install:
-- |
-  if [ $TRAVIS_OS_NAME = "linux" ]; then
-    export DISPLAY=:99.0
-    /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset
-    sleep 3
-  fi
+- "export DISPLAY=:99.0"
+- "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset"
+- sleep 3
+
 
 - python3 -m pip install -U setuptools pip
 - python3 -m pip install .
 - python3 -m pip install -r requirements-dev.txt
 
-- git clone https://github.com/restic/restic
+- wget https://github.com/restic/restic/releases/download/v0.9.3/restic_0.9.3_linux_amd64.bz2
+- bzcat restic_0.9.3_linux_amd64.bz2 > bin/restic
+- chmod +x bin/restic
 
 before_script:
-- if [ $TRAVIS_OS_NAME = "linux" ]; then (herbstluftwm )& fi
-- if [ $TRAVIS_OS_NAME = "osx" ]; then (sudo Xvfb :99 -ac -screen 0 1024x768x8 )& fi
+- export PATH=$PATH:$PWD/bin/
+- "herbstluftwm &"
 - sleep 3
+
 
 script:
 - pytest --forked
@@ -77,3 +78,7 @@ branches:
 
 notifications:
   email: false
+
+cache:
+  directories:
+  - $HOME/.cache/pip
