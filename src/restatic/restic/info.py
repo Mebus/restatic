@@ -1,6 +1,7 @@
 from collections import namedtuple
 from .restic_thread import ResticThread
 from restatic.models import RepoModel
+from restatic.utils import keyring
 
 FakeRepo = namedtuple("Repo", ["url", "id"])
 FakeProfile = namedtuple("FakeProfile", ["repo", "name", "ssh_key"])
@@ -71,6 +72,10 @@ class ResticInfoThread(ResticThread):
             # new_repo.unique_size = stats["unique_size"]
             # new_repo.total_unique_chunks = stats["total_unique_chunks"]
 
-        new_repo.save()
+            # store or update password in the keyring
+            keyring.set_password(
+                "restatic-repo", new_repo.url, result["params"]["password"]
+            )
+            new_repo.save()
 
-        self.app.backup_log_event.emit("Refresh info finished.")
+            self.app.backup_log_event.emit("Refresh info finished.")

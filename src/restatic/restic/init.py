@@ -37,8 +37,7 @@ class ResticInitThread(ResticThread):
                 url=result["params"]["repo_url"],
                 defaults={"encryption": result["params"]["encryption"]},
             )
-            if new_repo.encryption != "none":
-                keyring.set_password(
-                    "restatic-repo", new_repo.url, result["params"]["password"]
-                )
+            keyring.set_password(
+                "restatic-repo", new_repo.url, result["params"]["password"]
+            )
             new_repo.save()
